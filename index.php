@@ -1,5 +1,9 @@
 <?php
-date_default_timezone_set('Asia/Tokyo');
-header("Content-Type: text/json; charset=utf-8");
-$ret = ["status" => 200];
-echo json_encode($ret);
+
+require_once 'api/ReplApi.php';
+
+use \api2\ReplApi;
+
+// useしているので、\api2\ReplApiと正フルに確にコールしなくても呼べる
+$api = new ReplApi();
+echo json_encode($api->callExec());
