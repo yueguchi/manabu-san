@@ -1,9 +1,15 @@
 <?php
 
 require_once 'api/ReplApi.php';
+use \api\ReplApi;
 
-use \api2\ReplApi;
-
-// useしているので、\api2\ReplApiと正フルに確にコールしなくても呼べる
-$api = new ReplApi();
-echo json_encode($api->callExec());
+try {
+    if (isset($_GET["words"]) === false) {
+        throw new \api\APIError("wordsは必須です。", 400);
+    }
+    $api = new ReplApi($_GET["words"]);
+    echo $api->exec();
+} catch(Exception $e) {
+    http_response_code($e->getCode());
+    echo json_encode(["status" => $e->getCode(), "message" => $e->getMessage()]);
+}
