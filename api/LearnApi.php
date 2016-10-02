@@ -88,13 +88,11 @@ class LearnApi extends Common {
             // PHPのエラーを表示するように設定
             $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
             $dbh = new \PDO(
-                    sprintf(
-                        "mysql:dbname=%s;host=%s",
-                        substr($cleardb['path'], 1),
-                        $cleardb['host']),
+                        sprintf("mysql:dbname=%s;host=%s",substr($cleardb['path'], 1),$cleardb['host']),
                         $cleardb['user'],
                         $cleardb['pass']
                     );
+            mysql_set_charset('utf8');
             // SELECT文を変数に格納
             $sql = "SELECT * FROM manabu";
             // SQLステートメントを実行し、結果を変数に格納
