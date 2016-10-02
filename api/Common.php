@@ -54,6 +54,7 @@ class Common {
      */
     private function parseXmlToJson($xmlPbj)
     {
-        return $xmlPbj;
+        $xmlPbj = simplexml_load_string($xmlPbj, NULL, LIBXML_NOCDATA);
+        return json_encode($xmlPbj);
     }
 }
