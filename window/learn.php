@@ -14,7 +14,11 @@ if ($postWords === null || $postWords === "" || strlen($postWords) < 1) {
     header("Location: /front/manabu.php?status=0");
 }
 $api = new LearnApi($postWords);
-$api->exec();
+$errorMsg = $api->exec();
 
 // 登録が終わったら入力画面に戻す
-//header("Location: /front/manabu.php?status=1");
+if ($errorMsg) {
+    header("Location: /front/manabu.php?status=0&errorMsg={$errorMsg}");
+} else {
+    header("Location: /front/manabu.php?status=1");
+}

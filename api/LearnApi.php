@@ -86,7 +86,7 @@ class LearnApi extends Common {
             }
         } catch(Exception $e) {
             $dbh->rollBack();
-            echo "失敗しました。" . $e->getMessage();
+            return $e->getMessage();
         }
         $dbh->commit();
     }
