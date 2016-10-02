@@ -87,7 +87,8 @@ class LearnApi extends Common {
         try {
             // PHPのエラーを表示するように設定
             $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
-            $dbh = new PDO(
+            var_dump($cleardb);
+            $dbh = new \PDO(
                     sprintf(
                         "mysql:dbname=%s;host=%s",
                         substr($cleardb['path'], 1),
