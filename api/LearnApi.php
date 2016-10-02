@@ -99,9 +99,9 @@ class LearnApi extends Common {
         try {
             // PHPのエラーを表示するように設定
             $stmt = $dbh -> prepare("INSERT INTO manabu (word1, word2, word3) VALUES (:word1, :word2, :word3)");
-            $stmt->bindParam(':word1', $words[0], PDO::PARAM_STR);
-            $stmt->bindParam(':word2', $words[1], PDO::PARAM_STR);
-            $stmt->bindParam(':word3', $words[2], PDO::PARAM_STR);
+            $stmt->bindParam(':word1', $words[0], \PDO::PARAM_STR);
+            $stmt->bindParam(':word2', $words[1], \PDO::PARAM_STR);
+            $stmt->bindParam(':word3', $words[2], \PDO::PARAM_STR);
             $stmt->execute();
         } catch (Exception $e) {
              throw $e;
