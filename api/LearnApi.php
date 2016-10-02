@@ -55,16 +55,24 @@ class LearnApi extends Common {
                 }
             }
         }
-        $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
-        $dbh = new \PDO(
+        $dbh = null;
+        if (getenv('PHP_ENV') === 'heroku') {
+            $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
+            $dbh = new \PDO(
                     sprintf("mysql:dbname=%s;host=%s;charset=utf8;",substr($cleardb['path'], 1),$cleardb['host']),
                     $cleardb['user'],
                     $cleardb['pass']
                 );
+        } else {
+            $dbh = new \PDO(
+                    "mysql:dbname=manabu_san;host=localhost;charset=utf8;",
+                    "root",
+                    "root"
+                );
+        }
         $dbh->beginTransaction();
         try {
             foreach ($dbInsertArray as $words) {
-                echo "------\n";
                 if (count($words) < 3) {
                         switch (count($words)) {
                             case 1:
@@ -77,10 +85,6 @@ class LearnApi extends Common {
                                 break;
                         }
                 }
-                // debug
-                // foreach ($words as $index => $word) {
-                //     var_dump(" {$word}");
-                // }
                 // 確実にindex2まであるため、順繰りにinsertする
                 $this->insertManabu($dbh, $words);
             }

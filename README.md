@@ -22,3 +22,15 @@ Chatterbot
     
 - 会話API
     - https://manabu-san.herokuapp.com/window/chat.php?words=【会話文】
+    
+# local環境構築
+
+- mysql
+    - root:root
+    
+- DESC
+
+```
+create database manabu_san;
+create table manabu (id int(11) primary key auto_increment, word1 varchar(255), word2 varchar(255), word3 varchar(255));
+```
