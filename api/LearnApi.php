@@ -86,12 +86,29 @@ class LearnApi extends Common {
     {
         try {
             // PHPのエラーを表示するように設定
-            error_reporting(E_ALL & ~E_NOTICE);
-            $url = parse_url(getenv('DATABASE_URL'));
-            var_dump($url);
-            $dsn = sprintf('mysql:host=%s;dbname=%s', $url['host'], substr($url['path'], 1));
-            $pdo = new PDO($dsn, $url['user'], $url['pass']);
-            var_dump($pdo->getAttribute(PDO::ATTR_SERVER_VERSION));
+            $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
+            $dbh = new PDO(
+                    sprintf(
+                        "mysql:dbname=%s;host=%s",
+                        substr($cleardb['path'], 1),
+                        $cleardb['host']),
+                        $cleardb['user'],
+                        $cleardb['pass']
+                    );
+            // SELECT文を変数に格納
+            $sql = "SELECT * FROM manabu";
+             
+            // SQLステートメントを実行し、結果を変数に格納
+            $stmt = $dbh->query($sql);
+             
+            // foreach文で配列の中身を一行ずつ出力
+            foreach ($stmt as $row) {
+                // データベースのフィールド名で出力
+                echo $row['id'] . '：' . $row['word1'] . $row['word2'] . $row['word3'];
+                // 改行を入れる
+                echo '<br>';
+            }
+            
         } catch (PDOException $e) {
              exit('データベース接続失敗。'.$e->getMessage());
         }
