@@ -87,7 +87,6 @@ class LearnApi extends Common {
         try {
             // PHPのエラーを表示するように設定
             $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
-            var_dump($cleardb);
             $dbh = new \PDO(
                     sprintf(
                         "mysql:dbname=%s;host=%s",
@@ -98,10 +97,8 @@ class LearnApi extends Common {
                     );
             // SELECT文を変数に格納
             $sql = "SELECT * FROM manabu";
-             
             // SQLステートメントを実行し、結果を変数に格納
             $stmt = $dbh->query($sql);
-             
             // foreach文で配列の中身を一行ずつ出力
             foreach ($stmt as $row) {
                 // データベースのフィールド名で出力
@@ -109,10 +106,8 @@ class LearnApi extends Common {
                 // 改行を入れる
                 echo '<br>';
             }
-            
         } catch (PDOException $e) {
              exit('データベース接続失敗。'.$e->getMessage());
         }
-        var_dump($words);
     }
 }
