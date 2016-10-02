@@ -4,7 +4,7 @@
  * wordsを形態素解析にかけて、マルコフ連鎖式に品詞登録を行う
  */
 
-require_once 'api/ReplApi.php';
+require_once '../api/ReplApi.php';
 use \api\ReplApi;
 
 try {

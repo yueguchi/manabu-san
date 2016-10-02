@@ -4,8 +4,8 @@ namespace api;
 
 use \api\APIError;
 
-require_once 'api/Common.php';
-require_once 'api/APIError.php';
+require_once 'Common.php';
+require_once 'APIError.php';
 
 /**
 /**

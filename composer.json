@@ -1,0 +1,10 @@
+{
+    "name": "manabu-san",
+    "description": "The Jinko munoh.",
+    "keywords": ["framework", "scratch"],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=7.0.9"
+    }
+}
