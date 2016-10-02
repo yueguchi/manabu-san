@@ -4,6 +4,8 @@
         $status = $_GET["status"];
         if ($status === "1") {
             $completeMessage = "マナブさんがまた一つ賢くなりました。";
+        } else if ($status === "0") {
+            $completeMessage = "マナブさんが賢くなるために会話文を入れてみましょう。";
         }
     }
 ?>
