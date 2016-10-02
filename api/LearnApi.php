@@ -55,56 +55,56 @@ class LearnApi extends Common {
                 }
             }
         }
-        // var_dump($dbInsertArray);
-        foreach ($dbInsertArray as $words) {
-            echo "------\n";
-            if (count($words) < 3) {
-                    switch (count($words)) {
-                        case 1:
-                            $words[1] = "";
-                            $words[2] = "";
-                            break;
-                        case 2:
-                            $words[2] = "";
-                        default:
-                            break;
-                    }
+        $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
+        $dbh = new \PDO(
+                    sprintf("mysql:dbname=%s;host=%s;charset=utf8;",substr($cleardb['path'], 1),$cleardb['host']),
+                    $cleardb['user'],
+                    $cleardb['pass']
+                );
+        $dbh->beginTransaction();
+        try {
+            foreach ($dbInsertArray as $words) {
+                echo "------\n";
+                if (count($words) < 3) {
+                        switch (count($words)) {
+                            case 1:
+                                $words[1] = "";
+                                $words[2] = "";
+                                break;
+                            case 2:
+                                $words[2] = "";
+                            default:
+                                break;
+                        }
+                }
+                // debug
+                // foreach ($words as $index => $word) {
+                //     var_dump(" {$word}");
+                // }
+                // 確実にindex2まであるため、順繰りにinsertする
+                $this->insertManabu($dbh, $words);
             }
-            // debug
-            // foreach ($words as $index => $word) {
-            //     var_dump(" {$word}");
-            // }
-            // 確実にindex2まであるため、順繰りにinsertする
-            $this->insertManabu($words);
+        } catch(Exception $e) {
+            $dbh->rollBack();
+            echo "失敗しました。" . $e->getMessage();
         }
+        $dbh->commit();
     }
     
     /**
      * insert into manabu (word1, word2, word3) values($words[0], $words[1], $words[2]);
      */
-    protected function insertManabu($words)
+    protected function insertManabu($dbh, $words)
     {
         try {
             // PHPのエラーを表示するように設定
-            $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
-            $dbh = new \PDO(
-                        sprintf("mysql:dbname=%s;host=%s;charset=utf8;",substr($cleardb['path'], 1),$cleardb['host']),
-                        $cleardb['user'],
-                        $cleardb['pass']
-                    );
-            // SELECT文を変数に格納
-            $sql = "SELECT * FROM manabu";
-            // SQLステートメントを実行し、結果を変数に格納
-            $stmt = $dbh->query($sql);
-            // foreach文で配列の中身を一行ずつ出力
-            foreach ($stmt as $row) {
-                // データベースのフィールド名で出力
-                echo $row['id'] . '：' . $row['word1'] . $row['word2'] . $row['word3'];
-                // 改行を入れる
-                echo '<br>';
-            }
-        } catch (PDOException $e) {
-             exit('データベース接続失敗。'.$e->getMessage());
+            $stmt = $dbh -> prepare("INSERT INTO manabu (word1, word2, word3) VALUES (:word1, :word2, :word3)");
+            $stmt->bindParam(':word1', $words[0], PDO::PARAM_STR);
+            $stmt->bindParam(':word2', $words[1], PDO::PARAM_STR);
+            $stmt->bindParam(':word3', $words[2], PDO::PARAM_STR);
+            $stmt->execute();
+        } catch (Exception $e) {
+             throw $e;
         }
     }
 }
