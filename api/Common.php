@@ -8,12 +8,12 @@ class Common {
      * api
      * @var string
      */
-    private $api = 'http://jlp.yahooapis.jp/FuriganaService/V1/furigana';
+    protected $api = 'http://jlp.yahooapis.jp/MAService/V1/parse';
     /**
      * YahooアプリID
      * @var string
      */
-    private $appid = 'dj0zaiZpPXVzYzh2bVhoWXNCeSZzPWNvbnN1bWVyc2VjcmV0Jng9ZWE-';
+    protected $appid = 'dj0zaiZpPXVzYzh2bVhoWXNCeSZzPWNvbnN1bWVyc2VjcmV0Jng9ZWE-';
     /**
      * apiパラメータ
      * @var array

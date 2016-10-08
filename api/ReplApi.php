@@ -12,6 +12,12 @@ require_once 'APIError.php';
  */
 class ReplApi extends Common {
 
+    protected $defaultPalChatWords = [
+        "お腹すいた",
+        "パルだよ",
+        "お散歩行きたい"
+    ];
+    
     public function __construct($words)
     {
         if (empty($words)) {
@@ -27,7 +33,6 @@ class ReplApi extends Common {
         $ret = json_decode(parent::exec());
         // 名刺を一つランダムに抽出し、会話を行う。
         $word = $this->getRandomWord($ret);
-        var_dump($word);
         $dbh = null;
         if (getenv('PHP_ENV') === 'heroku') {
             $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
@@ -43,34 +48,50 @@ class ReplApi extends Common {
                     "root"
                 );
         }
-        // TODO 抽出した$wordをDB検索にかけて、会話を生成する
+        // 抽出した$wordをDB検索にかけて、会話を生成する
         // ここからマルコフ理論
-        $sql = "SELECT word1, word2, word3 FROM manabu WHERE word1 = ? OR word2 = ? OR word3 = ?";
-        $stmt = $dbh->prepare($sql);
-        if ($stmt->execute([$word, $word, $word])) {
-            while ($row = $stmt->fetch()) {
-                print_r($row);
+        $chat = "";
+        if ($word) {
+            $sql = "SELECT word1, word2, word3 FROM manabu WHERE word1 = ? OR word2 = ? OR word3 = ?";
+            $stmt = $dbh->prepare($sql);
+            if ($stmt->execute([$word, $word, $word])) {
+                while ($row = $stmt->fetch()) {
+                    // $rowは「word1, word2, word3の配列」
+                    $chat = $row["word1"];
+                    break;
+                }
             }
         }
+        return [
+            "word" => $word,
+            "result" => [
+                "chat" => $chat ?  $chat : $this->defaultPalChatWords[rand(0, count($this->defaultPalChatWords) - 1)]
+            ]
+        ];
     }
     
     /**
      * 形態素解析したクライアントの言葉の中から一つをランダムで抽出し、返却する
+     * posから名詞のみを抽出する
      */
     protected function getRandomWord($jsonWord)
     {
-        $ret = "";
         $randomArray = [];
-        foreach ($jsonWord->Result->WordList as $words) {
-            // 形態素解析結果が1つだった場合
-            if (count($jsonWord->Result->WordList->Word) === 1) {
-                $ret = $words->Surface;
-            } else {
-                foreach ($words as $word) {
-                    array_push($randomArray, $word->Surface);
+        if (count($jsonWord->ma_result->word_list->word) === 1) {
+            if ($jsonWord->ma_result->word_list->word->pos === "名詞") {
+                array_push($randomArray, $jsonWord->ma_result->word_list->word->surface);
+            }
+        } else {
+            foreach ($jsonWord->ma_result->word_list->word as $words) {
+                if ($words->pos === "名詞") {
+                    array_push($randomArray, $words->surface);
                 }
             }
         }
-        return count($randomArray) === 0 ? $ret : $randomArray[rand(0, count($randomArray) - 1)];
+        $ret = "";
+        if (count($randomArray) > 0) {
+            $ret = $randomArray[rand(0, count($randomArray) - 1)];
+        }
+        return $ret;
     }
 }

@@ -39,6 +39,7 @@
                     <input type="submit" value="送信">
                 </form>
             </div>
+            
         </section>
         <footer>
             <div>

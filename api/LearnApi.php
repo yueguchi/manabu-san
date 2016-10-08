@@ -25,7 +25,7 @@ class LearnApi extends Common {
         if (empty($words)) {
             throw new APIError("wordsは必須です", 400);
         }
-        $this->params["sentence"] = $words;
+        $this->params["sentence"] = strip_tags(trim($words));
         parent::__construct();
     }
     
@@ -33,34 +33,35 @@ class LearnApi extends Common {
     {
         // Commonからjson化された解析結果を受け取る。
         $ret = json_decode(parent::exec());
+        // 最後の要素に文章の終わりを示すための空文字を代入する
+        $obj = new \stdClass;
+        $obj->surface = "";
+        array_push($ret->ma_result->word_list->word, $obj);
         // 単語を3連続にしたものを一塊とし、DBに登録する。
         $marcoph = [];
         $dbInsertArray = [];
-        foreach ($ret->Result->WordList as $words) {
+        foreach ($ret->ma_result->word_list->word as $words) {
             // wordsがcount=1だと、配列ではなく、直下で「Surface」が返却される
-            if (count($ret->Result->WordList->Word) === 1) {
-                array_push($marcoph, $words->Surface);
+            if (count($ret->ma_result->word_list->word) === 1) {
+                array_push($marcoph, $ret->ma_result->word_list->word->surface);
                 array_push($dbInsertArray, $marcoph);
                 break;
-            } elseif (count($ret->Result->WordList->Word) === 2) {
-                foreach ($words as $word) {
-                    array_push($marcoph, $word->Surface);
-                }
+            } elseif (count($ret->ma_result->word_list->word) === 2) {
+                array_push($marcoph, $words->surface);
                 array_push($dbInsertArray, $marcoph);
                 break;
             } else {
-                foreach ($words as $word) {
-                    // 3連続の単語が完成してたなら、先頭をpopする
-                    if (count($marcoph) >= 3) {
-                        array_shift($marcoph);
-                    }
-                    array_push($marcoph, $word->Surface);
-                    if (count($marcoph) >= 3) {
-                        array_push($dbInsertArray, $marcoph);
-                    }
+                // 3連続の単語が完成してたなら、先頭をpopする
+                if (count($marcoph) >= 3) {
+                    array_shift($marcoph);
+                }
+                array_push($marcoph, $words->surface);
+                if (count($marcoph) >= 3) {
+                    array_push($dbInsertArray, $marcoph);
                 }
             }
         }
+        
         $dbh = null;
         if (getenv('PHP_ENV') === 'heroku') {
             $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
@@ -78,27 +79,44 @@ class LearnApi extends Common {
         }
         $dbh->beginTransaction();
         try {
+            $insertHashes = [];
+            $i = 0;
             foreach ($dbInsertArray as $words) {
                 if (count($words) < 3) {
-                        switch (count($words)) {
-                            case 1:
-                                $words[1] = "";
-                                $words[2] = "";
-                                break;
-                            case 2:
-                                $words[2] = "";
-                            default:
-                                break;
-                        }
+                    switch (count($words)) {
+                        case 1:
+                            $words[1] = "";
+                            $words[2] = "";
+                            break;
+                        case 2:
+                            $words[2] = "";
+                        default:
+                            break;
+                    }
                 }
+                array_push($insertHashes, hash("sha256", implode($words, "")));
+                $dbInsertArray[$i] = $words;
+                $i++;
+            }
+            $registHashes = $this->excludeRegisteredWords($insertHashes);
+            foreach ($dbInsertArray as $words) {
                 // 確実にindex2まであるため、順繰りにinsertする
                 $this->insertManabu($dbh, $words);
             }
         } catch(Exception $e) {
+            var_dump("error");
             $dbh->rollBack();
             return $e->getMessage();
         }
         $dbh->commit();
+    }
+    
+    /**
+     * 登録済みのhashを除外し、新しいhashのみを返却する
+     */
+    protected function excludeRegisteredWords($newHashes)
+    {
+        return $newHashes;
     }
     
     /**
@@ -108,7 +126,10 @@ class LearnApi extends Common {
     {
         try {
             // PHPのエラーを表示するように設定
-            $stmt = $dbh -> prepare("INSERT INTO manabu (word1, word2, word3) VALUES (:word1, :word2, :word3)");
+            $stmt = $dbh -> prepare("INSERT INTO manabu (hash, word1, word2, word3) VALUES (:hash, :word1, :word2, :word3)");
+            // 重複データを挿入しないため、3単語をsha256でhash化して、DBに入れておく。 
+            $hash = hash("sha256", implode($words, ""));
+            $stmt->bindParam(':hash', $hash);
             $stmt->bindParam(':word1', $words[0], \PDO::PARAM_STR);
             $stmt->bindParam(':word2', $words[1], \PDO::PARAM_STR);
             $stmt->bindParam(':word3', $words[2], \PDO::PARAM_STR);
