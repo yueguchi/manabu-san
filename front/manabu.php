@@ -34,7 +34,7 @@
     }
     $from = isset($_GET["from"]) ? $_GET["from"] : 0;
     $from = (empty($from) || $from < 0) ? 0 : $from;
-    $sql = 'select id, word1, word2, word3 from manabu limit ' . $from . ', 5';
+    $sql = 'select id, word1, word2, word3 from manabu limit ' . $from . ', 50';
     $stmt = $dbh->query($sql);
     $count = count($stmt->fetch(PDO::FETCH_ASSOC));
 ?>
@@ -48,6 +48,9 @@
             }
             ul.word-list > li {
                 border: solid 1px #000;
+            }
+            ul.word-list > li:nth−child(odd) { /* 効果がない。。。 */
+                background-color:#F0F0F6;
             }
             ul.word-list > li:after {
                 content: "";
