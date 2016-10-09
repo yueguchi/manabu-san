@@ -13,6 +13,7 @@ try {
     }
     $api = new ReplApi($_GET["words"]);
     // エスケープされるのを防ぐ(防がなくても良いのだけれど)
+    header("Access-Control-Allow-Origin: *");
     echo json_encode($api->exec(), JSON_UNESCAPED_UNICODE);
 } catch(Exception $e) {
     http_response_code($e->getCode());
