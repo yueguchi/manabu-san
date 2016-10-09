@@ -34,8 +34,9 @@
     }
     $from = isset($_GET["from"]) ? $_GET["from"] : 0;
     $from = (empty($from) || $from < 0) ? 0 : $from;
-    $sql = 'select id, word1, word2, word3 from manabu limit ' . $from . ', 50';
+    $sql = 'select id, word1, word2, word3 from manabu limit ' . ($from == 0 ? $from : ($from + 50)) . ', 50';
     $stmt = $dbh->query($sql);
+    // このカウントは1件のデータが取れているかどうか、つまり現状は4件取れているかどうかしか判断できない
     $count = count($stmt->fetch(PDO::FETCH_ASSOC));
 ?>
 <!DOCTYPE html>
@@ -48,9 +49,6 @@
             }
             ul.word-list > li {
                 border: solid 1px #000;
-            }
-            ul.word-list > li:nth−child(odd) { /* 効果がない。。。 */
-                background-color:#F0F0F6;
             }
             ul.word-list > li:after {
                 content: "";
@@ -79,6 +77,7 @@
                 </form>
             </div>
             <div class="manabi-list">
+                <span><?php echo($count); ?>件</span>
                 <ul>
                     <?php while($result = $stmt->fetch(PDO::FETCH_ASSOC)){ ?>
                         <li>

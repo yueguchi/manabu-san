@@ -26,6 +26,7 @@ class Common {
      */
     public function __construct()
     {
+        error_reporting(E_ALL & ~E_NOTICE);
         // TODO ここにlisence keyと一致しないと使えない仕組みを施して、keyを商品として得る。
         date_default_timezone_set('Asia/Tokyo');
         header("Content-Type: text/json; charset=utf-8");

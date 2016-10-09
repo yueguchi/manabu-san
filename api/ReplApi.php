@@ -5,6 +5,7 @@ namespace api;
 use \api\APIError;
 
 require_once 'Common.php';
+require_once 'LearnApi.php';
 require_once 'APIError.php';
 
 /**
@@ -13,9 +14,9 @@ require_once 'APIError.php';
 class ReplApi extends Common {
 
     protected $defaultPalChatWords = [
-        "お腹すいた",
-        "パルだよ",
-        "お散歩行きたい"
+        "調子どう？？",
+        "何してたの？",
+        "趣味はなに？？"
     ];
     
     public function __construct($words)
@@ -31,8 +32,13 @@ class ReplApi extends Common {
     {
         // Commonからjson化された解析結果を受け取る。
         $ret = json_decode(parent::exec());
+        // 学習させる
+        $api = new LearnApi($this->params["sentence"]);
+        $api->registWords($ret);
+        
         // 名刺を一つランダムに抽出し、会話を行う。
         $word = $this->getRandomWord($ret);
+        
         $dbh = null;
         if (getenv('PHP_ENV') === 'heroku') {
             $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
@@ -50,16 +56,33 @@ class ReplApi extends Common {
         }
         // 抽出した$wordをDB検索にかけて、会話を生成する
         // ここからマルコフ理論
-        $chat = "";
+        $chat = $word;
         if ($word) {
-            $sql = "SELECT word1, word2, word3 FROM manabu WHERE word1 = ? OR word2 = ? OR word3 = ?";
+            // 一つ目
+            $sql = "SELECT word1, word2, word3 FROM manabu WHERE word1 = ?";
             $stmt = $dbh->prepare($sql);
-            if ($stmt->execute([$word, $word, $word])) {
-                while ($row = $stmt->fetch()) {
-                    // $rowは「word1, word2, word3の配列」
-                    $chat = $row["word1"];
-                    break;
-                }
+            if ($stmt->execute([$word])) {
+                $row = $stmt->fetch();
+                // $rowは「word1, word2, word3の配列」
+                $chat .= $row["word2"];
+                $whereWord = $row["word2"];
+            }
+            // 二つ目
+            $sql = "SELECT word1, word2, word3 FROM manabu WHERE word2 = ?";
+            $stmt = $dbh->prepare($sql);
+            if ($stmt->execute([$whereWord])) {
+                $row = $stmt->fetch();
+                // $rowは「word1, word2, word3の配列」
+                $chat .= $row["word3"];
+                $whereWord = $row["word3"];
+            }
+            // 三つ目
+            $sql = "SELECT word3 FROM manabu WHERE word2 = ?";
+            $stmt = $dbh->prepare($sql);
+            if ($stmt->execute([$whereWord])) {
+                $row = $stmt->fetch();
+                // $rowは「word1, word2, word3の配列」
+                $chat .= $row["word3"];
             }
         }
         return [

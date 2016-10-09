@@ -33,10 +33,21 @@ class LearnApi extends Common {
     {
         // Commonからjson化された解析結果を受け取る。
         $ret = json_decode(parent::exec());
+        return $this->registWords($ret);
+    }
+    
+    /**
+     * 単語を登録する
+     */
+    public function registWords($ret)
+    {
         // 最後の要素に文章の終わりを示すための空文字を代入する
-        $obj = new \stdClass;
-        $obj->surface = "";
-        array_push($ret->ma_result->word_list->word, $obj);
+        if (count($ret->ma_result->word_list->word) > 1) {
+            $obj = new \stdClass;
+            $obj->surface = "";
+            array_push($ret->ma_result->word_list->word, $obj);
+        }
+
         // 単語を3連続にしたものを一塊とし、DBに登録する。
         $marcoph = [];
         $dbInsertArray = [];
