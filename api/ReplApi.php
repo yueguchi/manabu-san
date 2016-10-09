@@ -32,9 +32,6 @@ class ReplApi extends Common {
     {
         // Commonからjson化された解析結果を受け取る。
         $ret = json_decode(parent::exec());
-        // 学習させる
-        $api = new LearnApi($this->params["sentence"]);
-        $api->registWords($ret);
         
         // 名刺を一つランダムに抽出し、会話を行う。
         $word = $this->getRandomWord($ret);
@@ -62,29 +59,53 @@ class ReplApi extends Common {
             $sql = "SELECT word1, word2, word3 FROM manabu WHERE word1 = ?";
             $stmt = $dbh->prepare($sql);
             if ($stmt->execute([$word])) {
-                $row = $stmt->fetch();
-                // $rowは「word1, word2, word3の配列」
-                $chat .= $row["word2"];
-                $whereWord = $row["word2"];
+                $randomWord = [];
+                while($row = $stmt->fetch()) {
+                    // $rowは「word1, word2, word3の配列」
+                    array_push($randomWord, $row["word2"]);
+                }
+                // 複数あるfetch結果からランダムで選択する
+                $chatRandomWord = $randomWord[rand(0, count($randomWord) - 1)];
+                $chat .= $chatRandomWord;
+                $whereWord = $chatRandomWord;
             }
+            
             // 二つ目
             $sql = "SELECT word1, word2, word3 FROM manabu WHERE word2 = ?";
             $stmt = $dbh->prepare($sql);
             if ($stmt->execute([$whereWord])) {
-                $row = $stmt->fetch();
-                // $rowは「word1, word2, word3の配列」
-                $chat .= $row["word3"];
-                $whereWord = $row["word3"];
+                $randomWord = [];
+                while($row = $stmt->fetch()) {
+                    // $rowは「word1, word2, word3の配列」
+                    array_push($randomWord, $row["word3"]);
+                }
+                $chatRandomWord = $randomWord[rand(0, count($randomWord) - 1)];
+                $chat .= $chatRandomWord;
+                $whereWord = $chatRandomWord;
             }
             // 三つ目
             $sql = "SELECT word3 FROM manabu WHERE word2 = ?";
             $stmt = $dbh->prepare($sql);
             if ($stmt->execute([$whereWord])) {
-                $row = $stmt->fetch();
-                // $rowは「word1, word2, word3の配列」
-                $chat .= $row["word3"];
+                $randomWord = [];
+                while($row = $stmt->fetch()) {
+                    // $rowは「word1, word2, word3の配列」
+                    array_push($randomWord, $row["word3"]);
+                }
+                $chatRandomWord = $randomWord[rand(0, count($randomWord) - 1)];
+                $chat .= $chatRandomWord;
+                $whereWord = $chatRandomWord;
+            }
+            // 最後にword1単語だったら、未登録の単語なので、その単語について学習するために、それが何かを聞く
+            if (strlen($chat) === strlen($word)) {
+                $chat = $word . "ってなーに？";
             }
         }
+        
+        // 最後に学習させる
+        $api = new LearnApi($this->params["sentence"]);
+        $api->registWords($ret);
+        
         return [
             "word" => $word,
             "result" => [
