@@ -167,6 +167,32 @@
                         $(".result-area").removeClass("hidden");
                         $("#result").text(JSON.stringify(purchaseItems));
                     });
+                    ///// 関数 /////
+                    
+                    /**
+                     * カートに入れる、num加算共通処理
+                     */
+                    function culculateNum(_$this, item) {
+                        // num計算
+                        var bookid = $(_$this).attr("bookid");
+                        $.each(books, function(index, book) {
+                            if (book.id === bookid) {
+                                book.num++;
+                                item.find(".book-cart-counts").text(book.num);
+                                return;
+                            }
+                        });
+                    }
+                    
+                    function culculateAmmount() {
+                        var ammount = 0;
+                        $.each(books, function(indexn, book) {
+                            if (book.num > 0) {
+                                ammount += book.price * book.num;
+                            }
+                        });
+                        $("#disp-ammount").text(ammount);
+                    }
                 });
             </script>
         </body>
