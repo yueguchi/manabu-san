@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <META charset="utf-8">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .ammount {
+            text-align: right;
+            margin: 10px;
+        }
+
+    </style>
+    <body>
+        <section class="item-list">
+            <div>
+                <h2>商品一覧</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>題名</th>
+                            <th>単価</th>
+                            <th>発売日</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="copy-to">
+                        <tr class="item-copy hidden" id="copy-item">
+                            <td class="book-title">copy</td>
+                            <td class="book-price">000</td>
+                            <td class="book-release">0000/00/00</td>
+                            <td>
+                                <button class="btn btn-default btn-xs cart-add" bookid="0">カートに入れる</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="cart-list">
+            <div>
+                <h2>カート</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>題名</th>
+                            <th>単価</th>
+                            <th>数量</th>
+                        </tr>
+                    </thead>
+                    <tbody class="cart-copy-to">
+                        <tr class="cart-item-copy hidden" id="cart-copy-item">
+                            <td class="book-title">cart-copy</td>
+                            <td class="book-price">0000</td>
+                            <td class="book-cart-counts">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="ammount">
+                <p>合計金額:
+                    <b id="disp-ammount">0</b>円</p>
+            </div>
+        </section>
+        <section class="purchase-area hidden">
+            <div>
+                <button class="btn btn-primary btn-lg btn-block cart-purchase">購入する</button>
+            </div>
+        </section>
+        <section class="result-area hidden">
+            <h2>購入データ</h2>
+            <pre id="result">
+                
+            </pre>
+        </section>
+        <script>
+            var books = [
+                {
+                    'id': '1',
+                    'title': '3日でわかるjQuery',
+                    'price': '2980',
+                    'release': '2016/04/02',
+                    'num': 0
+                }, {
+                    'id': '2',
+                    'title': 'jQuery実戦入門',
+                    'price': '3400',
+                    'release': '2015/10/25',
+                    'num': 0
+                }, {
+                    'id': '3',
+                    'title': 'jQuery500の技',
+                    'price': '1980',
+                    'release': '2016/03/16',
+                    'num': 0
+                }, {
+                    'id': '4',
+                    'title': '実践jQuery',
+                    'price': '2980',
+                    'release': '2016/03/16',
+                    'num': 0
+                }, {
+                    'id': '5',
+                    'title': 'プログラミングjQuery',
+                    'price': '5600',
+                    'release': '2016/04/16',
+                    'num': 0
+                }
+            ];
+
+            var purchaseItems = {
+                ammount: 0,
+                data: []
+            };
+
+            $(function() {
+                // 商品一覧の表示
+                $.each(books, function(index, book) {
+                    var item = $("#copy-item").clone();
+                    item.attr("id", "item-" + index);
+                    item.show().removeClass("item-copy").removeClass("hidden");
+                    item.find(".book-title").text(book.title);
+                    item.find(".book-price").text(book.price);
+                    item.find(".book-release").text(book.release);
+                    item.find(".cart-add").attr("bookid", book.id).on("click", function() {
+                        // 購入ボタンの再表示
+                        $(".purchase-area").removeClass("hidden");
+                        // カートに入れるイベントの定義
+                        var cartItem = $("#cart-item-" + $(this).attr("bookid"));
+                        if (cartItem.length > 0) {
+                            culculateNum(this, cartItem);
+                            culculateAmmount();
+                            return;
+                        }
+                        var item = $("#cart-copy-item").clone();
+                        item.attr("id", "cart-item-" + $(this).attr("bookid"));
+                        item.show().removeClass("cart-item-copy").removeClass("hidden");
+                        item.find(".book-title").text($(this).closest("tr").find(".book-title").text());
+                        item.find(".book-price").text($(this).closest("tr").find(".book-price").text());
+                        culculateNum(this, item);
+                        $(".cart-copy-to").append(item);
+                        culculateAmmount();
+                    });
+                    $(".copy-to").append(item);
+                });
+
+                // 購入処理
+                $(".cart-purchase").on("click", function() {
+                    // 初期化
+                    purchaseItems.data = [];
+                    // 格納
+                    var ammount = 0;
+                    $.each(books, function(index, book) {
+                        // numが0以上ならカートに入れている
+                        if (book.num > 0) {
+                            var purchase = {
+                                "id": book.id,
+                                "num": book.num
+                            };
+                            purchaseItems.data.push(purchase);
+                            ammount += (book.price * book.num);
+                        }
+                    });
+                    // 合計金額
+                    purchaseItems.ammount = ammount;
+                    // resultの表示
+                    $(".result-area").removeClass("hidden");
+                    $("#result").text(JSON.stringify(purchaseItems));
+                });
+
+                ///// 関数 /////
+
+                /**
+ * カートに入れる、num加算共通処理
+ */
+                function culculateNum(_$this, item) {
+                    // num計算
+                    var bookid = $(_$this).attr("bookid");
+                    $.each(books, function(index, book) {
+                        if (book.id === bookid) {
+                            book.num++;
+                            item.find(".book-cart-counts").text(book.num);
+                            return;
+                        }
+                    });
+                }
+
+                function culculateAmmount() {
+                    var ammount = 0;
+                    $.each(books, function(indexn, book) {
+                        if (book.num > 0) {
+                            ammount += book.price * book.num;
+                        }
+                    });
+                    $("#disp-ammount").text(ammount);
+                }
+            });
+        </script>
+    </body>
+</html>
