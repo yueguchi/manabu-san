@@ -28,14 +28,14 @@ class LearnApi extends Common {
         $this->params["sentence"] = strip_tags(trim($words));
         parent::__construct();
     }
-    
+
     public function exec()
     {
         // Commonからjson化された解析結果を受け取る。
         $ret = json_decode(parent::exec());
         return $this->registWords($ret);
     }
-    
+
     /**
      * 単語を登録する
      */
@@ -72,7 +72,7 @@ class LearnApi extends Common {
                 }
             }
         }
-        
+
         $dbh = null;
         if (getenv('PHP_ENV') === 'heroku') {
             $cleardb = parse_url(getenv('CLEARDB_DATABASE_URL'));
@@ -121,7 +121,7 @@ class LearnApi extends Common {
         }
         $dbh->commit();
     }
-    
+
     /**
      * 登録済みのhashを除外し、新しいhashのみを返却する
      */
@@ -129,7 +129,7 @@ class LearnApi extends Common {
     {
         return $newHashes;
     }
-    
+
     /**
      * insert into manabu (word1, word2, word3) values($words[0], $words[1], $words[2]);
      */
@@ -138,7 +138,7 @@ class LearnApi extends Common {
         try {
             // PHPのエラーを表示するように設定
             $stmt = $dbh -> prepare("INSERT INTO manabu (hash, word1, word2, word3) VALUES (:hash, :word1, :word2, :word3)");
-            // 重複データを挿入しないため、3単語をsha256でhash化して、DBに入れておく。 
+            // 重複データを挿入しないため、3単語をsha256でhash化して、DBに入れておく。
             $hash = hash("sha256", implode($words, ""));
             $stmt->bindParam(':hash', $hash);
             $stmt->bindParam(':word1', $words[0], \PDO::PARAM_STR);

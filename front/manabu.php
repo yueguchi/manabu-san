@@ -1,21 +1,4 @@
 <?php
-    $completeMessage = "";
-    $errorMsg = "";
-    if (isset($_GET["status"])) {
-        $status = $_GET["status"];
-        if ($status === "1") {
-            $completeMessage = "マナブさんがまた一つ賢くなりました。";
-        } else if ($status === "0") {
-            $completeMessage = "マナブさんが賢くなるために会話文を入れてみましょう。";
-        }
-    }
-    if (isset($_GET["status"]) && isset($_GET["errorMsg"])) {
-        $status = $_GET["status"];
-        if ($status === "1") {
-            $errorMsg = $_GET["errorMsg"];
-        }
-    }
-    
     // DBアクセス
     $dbh = null;
     if (getenv('PHP_ENV') === 'heroku') {
@@ -32,17 +15,21 @@
                 "root"
             );
     }
-    $from = isset($_GET["from"]) ? $_GET["from"] : 0;
+    $from = isset($_GET["from"]) ? intval($_GET["from"]) : 0;
     $from = (empty($from) || $from < 0) ? 0 : $from;
-    $sql = 'select id, word1, word2, word3 from manabu limit ' . ($from == 0 ? $from : ($from + 50)) . ', 50';
+    // 結果リスト取得
+    $sql = 'select id, word1, word2, word3 from manabu limit ' . ($from > 0 ? $from : 0) . ', 50';
     $stmt = $dbh->query($sql);
-    // このカウントは1件のデータが取れているかどうか、つまり現状は4件取れているかどうかしか判断できない
-    $count = count($stmt->fetch(PDO::FETCH_ASSOC));
+    // 全件数
+    $sql = 'select count(*) from manabu';
+    $count = intval($dbh->query($sql)->fetchAll()[0][0]);
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <style>
             ul > li {
                 list-style: none;
@@ -56,68 +43,78 @@
             .flex {
                 display: flex;
             }
+            .container {
+                /* foterの高さ分 */
+                margin-bottom: 90px;
+            }
+            .footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                height: 90px;
+                background-color: #f5f5f5;
+            }
+            .footer > .container {
+                padding-right: 15px;
+                padding-left: 15px;
+            }
         </style>
     </head>
     <title>マナブさん ~自己学習~</title>
     <body>
-        <header>
-            <div>
-                ヘッダー
-            </div>
-        </header>
-        <section>
-            <div>
-                <small class="manabu_complete"><?php echo($completeMessage) ?></small>
-                <small class="manabu_error"><?php echo($errorMsg) ?></small>
-                <form method="post" action="../window/learn.php">
-                    <div>
-                        <input type="text" value="" name="words" placeholder="覚えさせたい会話文を入力してください">
-                    </div>
-                    <input type="submit" value="送信">
-                </form>
-            </div>
+        <nav class="navbar navbar-inverse">
+  ...
+</nav>
+        <section class="container">
             <div class="manabi-list">
                 <span><?php echo($count); ?>件</span>
-                <ul>
-                    <?php while($result = $stmt->fetch(PDO::FETCH_ASSOC)){ ?>
-                        <li>
-                            <ul class="flex word-list">
-                                <li>
-                                    <?php echo $result['id']; ?>
-                                </li>
-                                <li>
-                                    <?php echo $result['word1']; ?>
-                                </li>
-                                <li>
-                                    <?php echo $result['word2']; ?>
-                                </li>
-                                <li>
-                                    <?php echo $result['word3']; ?>
-                                </li>
-                            </ul>
-                        </li>
-                    <?php } ?>
-                </ul>
-                <?php if ($count > 1 && $from <= 0) { ?>
-                    <span>
-                        <small><a href="./manabu.php?from=<?php echo $from + 5 ?>">さらに見る>></a></small>
-                    </span>
-                <?php } elseif ($count > 1) { ?>
-                    <span>
-                        <small><a href="./manabu.php?from=<?php echo $from - 5 ?>"><<戻る</a></small>
-                        <small><a href="./manabu.php?from=<?php echo $from + 5 ?>">さらに見る>></a></small>
-                    </span>
-                <?php } else { ?>
-                    <span>
-                        <small><a href="./manabu.php?from=<?php echo $from - 5 ?>"><<戻る</a></small>
-                    </span>
-                <?php } ?>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>WORD1</th>
+                            <th>WORD2</th>
+                            <th>WORD3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $resultCount = 0?>
+                        <?php while($result = $stmt->fetch(PDO::FETCH_ASSOC)){ $resultCount++ ?>
+                            <tr>
+                                <th scope="row"><?php echo $result['id']; ?></th>
+                                <td><?php echo $result['word1']; ?></td>
+                                <td><?php echo $result['word2']; ?></td>
+                                <td><?php echo $result['word3']; ?></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
             </div>
         </section>
-        <footer>
-            <div>
-                フッター
-            </div>
+        <footer class="footer">
+          <div class="container">
+            <?php if ($count > 50 && $from <= 0) { ?>
+                <nav aria-label="...">
+                  <ul class="pager">
+                    <li class="next"><a href="./manabu.php?from=<?php echo $from + 50 ?>">次へ <span aria-hidden="true">&rarr;</span></a></li>
+                  </ul>
+                </nav>
+            <?php } elseif ($count > 50 && $resultCount >= 50) { ?>
+                <nav aria-label="...">
+                  <ul class="pager">
+                    <li class="previous"><a href="./manabu.php?from=<?php echo $from - 50 ?>"><span aria-hidden="true">&larr;</span> 前へ</a></li>
+                    <li class="next"><a href="./manabu.php?from=<?php echo $from + 50 ?>">次へ <span aria-hidden="true">&rarr;</span></a></li>
+                  </ul>
+                </nav>
+            <?php } else if($from > 0) { ?>
+                <nav aria-label="...">
+                  <ul class="pager">
+                    <li class="previous"><a href="./manabu.php?from=<?php echo $from - 50 ?>"><span aria-hidden="true">&larr;</span> 前へ</a></li>
+                  </ul>
+                </nav>
+            <?php } ?>
+            <p class="text-muted">manabu san is jinkoh-munoh by nanayu ©palcom.inc</p>
+          </div>
         </footer>
     </body>
 </html>
