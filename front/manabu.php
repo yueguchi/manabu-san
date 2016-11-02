@@ -31,6 +31,12 @@
         <meta charset="UTF-8">
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <style>
+            .navbar-inverse {
+                color: whitesmoke;
+                text-align: center;
+                font-weight:bold;
+                font-size: 34px;
+            }
             ul > li {
                 list-style: none;
             }
@@ -63,8 +69,8 @@
     <title>マナブさん ~自己学習~</title>
     <body>
         <nav class="navbar navbar-inverse">
-  ...
-</nav>
+            マナブさん is 人工無能
+        </nav>
         <section class="container">
             <div class="manabi-list">
                 <span><?php echo($count); ?>件</span>
