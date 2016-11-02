@@ -115,7 +115,6 @@ class LearnApi extends Common {
                 $this->insertManabu($dbh, $words);
             }
         } catch(Exception $e) {
-            var_dump("error");
             $dbh->rollBack();
             return $e->getMessage();
         }

@@ -32,5 +32,5 @@ Chatterbot
 
 ```
 create database manabu_san;
-create table manabu (id int(11) primary key auto_increment, word1 varchar(255), word2 varchar(255), word3 varchar(255));
+create table manabu (id int(11) primary key auto_increment, word1 varchar(255), word2 varchar(255), word3 varchar(255), hash varchar(255) UNIQUE KEY);
 ```
