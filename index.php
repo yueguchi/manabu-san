@@ -7,6 +7,7 @@ $learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
  <html lang="ja">
      <head>
          <meta charset="UTF-8">
+         <meta name="viewport" content="width=device-width,initial-scale=1">
          <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
          <link rel="stylesheet" type="text/css" href="/css/style.css" />
          <script src="https://use.fontawesome.com/79145639ef.js"></script>
@@ -24,6 +25,7 @@ $learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
                     <tr>
                         <th>#</th>
                         <th>API名</th>
+                        <th>TYPE</th>
                         <th>URL</th>
                         <th>備考</th>
                     </tr>
@@ -31,22 +33,25 @@ $learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
                 <tbody>
                     <tr>
                         <th scope="row">1</th>
-                        <td>対話API【REPL API】</td>
-                        <td><a href=<?php echo $replApiUrl; ?>><?php echo $replApiUrl; ?></a></td>
+                        <td class="api-name-area">対話API<br>【REPL API】</td>
+                        <td>GET</td>
+                        <td class="url-area"><a href=<?php echo $replApiUrl; ?>><?php echo $replApiUrl; ?></a></td>
                         <td class="biko-area">wordsに会話文を指定することで、返答を返すAPI。会話文を分かち書きを行う。
                             分かち書きされた単語の中から名詞をランダムに1つ抽出し、マルコフ連鎖で関連性のある言葉を導き出した生成した会話を返却する</td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>
-                        <td>学習API【LEARN API】</td>
-                        <td><a href=<?php echo $learnApiUrl; ?>><?php echo $learnApiUrl; ?></a></td></td>
+                        <td class="api-name-area">学習API<br>【LEARN API】</td>
+                        <td>POST</td>
+                        <td class="url-area"><a href=<?php echo $learnApiUrl; ?>><?php echo $learnApiUrl; ?></a></td></td>
                         <td class="biko-area">wordsに会話文を指定することで、そのすべての単語を学習するAPI。
                             マルコフ連鎖で3分割に分かち書きを行った形でDBに登録する。ただし、3連続の言葉をつなげたhashを保持し、一意性を保っている。</td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>
-                        <td>マナブさん学習状況一覧</td>
-                        <td><a href=<?php echo $learnedListUrl; ?>><?php echo $learnedListUrl; ?></a></td>
+                        <td class="api-name-area">マナブさん<br>学習状況一覧</td>
+                        <td>GET</td>
+                        <td class="url-area"><a href=<?php echo $learnedListUrl; ?>><?php echo $learnedListUrl; ?></a></td>
                         <td class="biko-area"></td>
                     </tr>
                 </tbody>
