@@ -1,5 +1,6 @@
 <?php
 $replApiUrl = "http://{$_SERVER["HTTP_HOST"]}/window/chat.php?words=【会話文を入力】";
+$learnApiUrl = "http://{$_SERVER["HTTP_HOST"]}/window/learn.php?words=【会話文を入力】";
 $learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
  ?>
  <!DOCTYPE html>
@@ -32,14 +33,15 @@ $learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
                         <th scope="row">1</th>
                         <td>対話API【REPL API】</td>
                         <td><a href=<?php echo $replApiUrl; ?>><?php echo $replApiUrl; ?></a></td>
-                        <td class="biko-area">wordsに会話文を入力することで、返答を返すAPI。会話文を分かち書きし、
-                            その中かを名詞をランダムに1つ抽出し、その名詞と関連性のある言葉をマルコフ連鎖で導き出された会話を返却する</td>
+                        <td class="biko-area">wordsに会話文を指定することで、返答を返すAPI。会話文を分かち書きを行う。
+                            分かち書きされた単語の中から名詞をランダムに1つ抽出し、マルコフ連鎖で関連性のある言葉を導き出した生成した会話を返却する</td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>
                         <td>学習API【LEARN API】</td>
-                        <td></td>
-                        <td class="biko-area"></td>
+                        <td><a href=<?php echo $learnApiUrl; ?>><?php echo $learnApiUrl; ?></a></td></td>
+                        <td class="biko-area">wordsに会話文を指定することで、そのすべての単語を学習するAPI。
+                            マルコフ連鎖で3分割に分かち書きを行った形でDBに登録する。ただし、3連続の言葉をつなげたhashを保持し、一意性を保っている。</td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>

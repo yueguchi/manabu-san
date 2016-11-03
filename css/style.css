@@ -84,6 +84,7 @@ body {
     border:#333 solid 3px;
     border-radius:18px;
     background:#fff;
+    width: 270px;
     box-shadow:
         -7px -5px 0 0 #fff inset,
         2px 3px 0 0 #000;
@@ -91,6 +92,8 @@ body {
 
 .arrow_box_left {
     left: -60px;
+    color: #fff;
+    background-color: #5cb85c;
 }
 
 .arrow_box_right {

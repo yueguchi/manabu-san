@@ -1,6 +1,17 @@
 $(function() {
     $(".loading").hide();
     // chat送信
+    /**
+     * エンターキーでsubmitさせる
+     */
+    $("#chat-text").keydown(function(e) {
+        // エンターキーはchatのトリガーにする
+        if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+            // キーボードの出っ放しを防ぐため、focusを外す
+            $(this).blur();
+            $(".chat-icon").trigger("click");
+        }
+    });
     $(".chat-icon").on("click", function() {
         if ($("#chat-text").val().length > 0) {
             var postMessage = $("#chat-text").val();
