@@ -29,47 +29,14 @@
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <style>
-            .navbar-inverse {
-                color: whitesmoke;
-                text-align: center;
-                font-weight:bold;
-                font-size: 34px;
-            }
-            ul > li {
-                list-style: none;
-            }
-            ul.word-list > li {
-                border: solid 1px #000;
-            }
-            ul.word-list > li:after {
-                content: "";
-            }
-            .flex {
-                display: flex;
-            }
-            .container {
-                /* foterの高さ分 */
-                margin-bottom: 90px;
-            }
-            .footer {
-                position: fixed;
-                bottom: 0;
-                width: 100%;
-                height: 90px;
-                background-color: #f5f5f5;
-            }
-            .footer > .container {
-                padding-right: 15px;
-                padding-left: 15px;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="/css/style.css" />
     </head>
     <title>マナブさん ~自己学習~</title>
     <body>
         <nav class="navbar navbar-inverse">
-            マナブさん is 人工無能
+            <img class="service-icon" src="/image/manabu-san.png" />
+            <a href="/">マナブさん</a> is 人工無能
         </nav>
         <section class="container">
             <div class="manabi-list">

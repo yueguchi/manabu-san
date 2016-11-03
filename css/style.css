@@ -1,0 +1,158 @@
+body {
+    margin: 10px 10px 120px 10px;
+    letter-spacing: 0.2em;
+    width: 100%;
+}
+.service-icon {
+    width: 70px;
+    height: 70px;
+    background-color: #fff;
+    border-radius: 20px;
+}
+.navbar-inverse {
+    margin: -10px;
+    color: whitesmoke;
+    text-align: center;
+    font-weight:bold;
+    font-size: 34px;
+}
+.container {
+    margin-top: 20px;
+    /* foterの高さ分 */
+    margin-bottom: 90px;
+}
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 90px;
+    background-color: #f5f5f5;
+}
+.footer > .container {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.no-pochi {
+    list-style: none;
+}
+
+.flex {
+    display: flex;
+}
+
+.biko-area {
+    width: 400px;
+}
+
+.chat-example {
+    overflow: scroll;
+    max-height 200px;
+    height: 200px;
+    min-height: 200px;
+    width: 150vh;
+    margin: 0 auto; /* 均等配置で真ん中寄せになる */
+    background: #f9f9f9;
+}
+.communication {
+    height: 50px;
+    z-index: 999;
+    display: flex;
+    width: 100%;
+    justify-content:space-around;
+}
+.communication > .chat, input,span {
+    flex: auto;
+}
+.communication > input[type="text"] {
+    border: 1px solid #B9C9CE;
+    border-radius: 5px;
+    font-size: 18px;
+    padding: 12px 0.8em;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+.communication > i {
+    margin-left: 10px;
+}
+
+/* 吹き出し */
+.arrow_box {
+    position:relative;
+    margin:0 100px 30px 100px;
+    padding:5px 10px;
+    color:#333;
+    border:#333 solid 3px;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:
+        -7px -5px 0 0 #fff inset,
+        2px 3px 0 0 #000;
+}
+
+.arrow_box_left {
+    left: -60px;
+}
+
+.arrow_box_right {
+    right: -60px;
+}
+
+.arrow_box_left:after {
+    content:" ";
+    position:absolute;
+    bottom:-27px;
+    left:48px;
+    width:0;
+    height:0;
+    border-width:14px;
+    border-style:solid;
+    border-color:transparent;
+    border-top-color:#fff;
+}
+
+.arrow_box_left:before {
+    content:" ";
+    position:absolute;
+    top:100%;
+    left:44px;
+    width:0;
+    height:0;
+    border-width:20px;
+    border-style:solid;
+    border-color:transparent;
+    border-top-color:#333;
+}
+
+.arrow_box_right:after {
+    content:" ";
+    position:absolute;
+    bottom:-27px;
+    right:48px;
+    width:0;
+    height:0;
+    border-width:14px;
+    border-style:solid;
+    border-color:transparent;
+    border-top-color:#fff;
+}
+
+.arrow_box_right:before {
+    content:" ";
+    position:absolute;
+    top:100%;
+    right:44px;
+    width:0;
+    height:0;
+    border-width:20px;
+    border-style:solid;
+    border-color:transparent;
+    border-top-color:#333;
+}
+/* 吹き出し ここまで */
+
+/* ローディング */
+.loading {
+    float: left;
+    margin-left: 50%;
+    color: blue;
+}
