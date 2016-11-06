@@ -59,7 +59,7 @@ $learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
          </section>
          <br><br>
          <section>
-             <div class="chat-example" data-repl-url=<?php echo "http://{$_SERVER["HTTP_HOST"]}/window/chat.php";?>>
+             <div class="chat-example" data-repl-url=<?php echo (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . "{$_SERVER["HTTP_HOST"]}/window/chat.php";?>>
                  <div class="loading">
                      <i class="fa fa-spinner fa-spin fa-5x"></i>
                 </div>
