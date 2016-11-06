@@ -49,7 +49,7 @@ $learnedListUrl = "{$protocol}{$_SERVER["HTTP_HOST"]}/front/manabu.php";
                             マルコフ連鎖で3分割に分かち書きを行った形でDBに登録する。ただし、3連続の言葉をつなげたhashを保持し、一意性を保っている。</td>
                     </tr>
                     <tr>
-                        <th scope="row">2</th>
+                        <th scope="row">3</th>
                         <td class="api-name-area">マナブさん<br>学習状況一覧</td>
                         <td>GET</td>
                         <td class="url-area"><a href=<?php echo $learnedListUrl; ?>><?php echo $learnedListUrl; ?></a></td>
