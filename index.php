@@ -1,7 +1,8 @@
 <?php
-$replApiUrl = "http://{$_SERVER["HTTP_HOST"]}/window/chat.php?words=【会話文を入力】";
-$learnApiUrl = "http://{$_SERVER["HTTP_HOST"]}/window/learn.php?words=【会話文を入力】";
-$learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
+$protocol = getenv('PHP_ENV') === 'heroku' ? "https://" : "http://";
+$replApiUrl = "{$protocol}{$_SERVER["HTTP_HOST"]}/window/chat.php?words=【会話文を入力】";
+$learnApiUrl = "{$protocol}{$_SERVER["HTTP_HOST"]}/window/learn.php?words=【会話文を入力】";
+$learnedListUrl = "{$protocol}{$_SERVER["HTTP_HOST"]}/front/manabu.php";
  ?>
  <!DOCTYPE html>
  <html lang="ja">
@@ -59,7 +60,7 @@ $learnedListUrl = "http://{$_SERVER["HTTP_HOST"]}/front/manabu.php";
          </section>
          <br><br>
          <section>
-             <div class="chat-example" data-repl-url=<?php echo (empty($_SERVER["HTTPS"]) ? "http://" : "https://") . "{$_SERVER["HTTP_HOST"]}/window/chat.php";?>>
+             <div class="chat-example" data-repl-url=<?php echo "{$protocol}{$_SERVER["HTTP_HOST"]}/window/chat.php";?>>
                  <div class="loading">
                      <i class="fa fa-spinner fa-spin fa-5x"></i>
                 </div>
