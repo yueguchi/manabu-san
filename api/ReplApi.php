@@ -117,7 +117,7 @@ class ReplApi extends Common {
             }
             // 最後にword1単語だったら、未登録の単語なので、その単語について学習するために、それが何かを聞く
             if (strlen($chat) === strlen($word)) {
-                $chat = $word . "ってなーに？";
+                $chat = $word . "なの？";
             }
         }
         
