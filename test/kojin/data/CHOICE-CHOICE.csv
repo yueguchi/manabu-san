@@ -1,0 +1,13 @@
+id,name,text
+1,sex,男性
+2,sex,女性
+3,rental,貸与区分
+4,house,一軒家
+5,house,マンション
+6,house,アパート
+13,states,東京都
+14,states,埼玉県
+21,cohabit,同居
+22,cohabit,一人暮らし
+31,care,扶養あり
+32,care,扶養なし

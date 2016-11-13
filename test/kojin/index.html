@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+    <script src="lib/alasql.min.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="js/db.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand">COMPANY</a>
+            </div>
+            
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="index.html">個人情報管理</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>システム</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a onclick="window.location.reload(true);"><span class="glyphicon glyphicon-refresh"></span>リロード</a>
+                            </li>
+                            <li>
+                                <a onclick="DB.init();"><span class="glyphicon glyphicon-repeat"></span>DB初期化</a>
+                            </li>
+                            <li>
+                                <a onclick="DB.remove();"><span class="glyphicon glyphicon-trash"></span>DB削除</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <form action="index.html" class="for-m-inline text-center">
+            <div class="form-group">
+                <input name="q1" type="text" class="form-control" placeholder="社員番号">
+            </div>
+            <div class="form-group">
+                <input name="q2" type="text" class="form-control" placeholder="氏名の一部">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span>検索
+            </button>
+        </form>
+        <hr>
+        
+        <div class="clearfix" style="margin: 10px 0;">
+            <a href="emp-form.html" class="btn btn-success pull-right"><span class="glyphicon glyphicon-plus"></span>新規</a>
+        </div>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>社員番号</th>
+                    <th>氏名(漢字)</th>
+                    <th>氏名(カナ)</th>
+                    <th>性別</th>
+                    <th>生年月日</th>
+                    <th>連絡先電話番号</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-emps">
+            </tbody>
+        </table>
+    </div>
+    <script src="js/index.js"></script>
+</body>
+</html>
