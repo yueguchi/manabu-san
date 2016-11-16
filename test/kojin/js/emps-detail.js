@@ -62,7 +62,7 @@ $(function() {
             $('<span> </span>').appendTo(td);
             $('<a class="btn btn-xs btn-danger">').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
         }
-        $('#ins-addr').attr('href', 'addr-form.html?emp=' + emp.id);
+        target.find('#ins-addr').attr('href', 'addr-form.html?emp=' + emp.id);
         // idの書き換え
         target.find("#tbody-addr").attr("id", "tbody-addr_" + emp.id);
         target.find("#ins-addr").attr("id", "ins-addr_" + emp.id);
