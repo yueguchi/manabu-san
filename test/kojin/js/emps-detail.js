@@ -20,8 +20,11 @@ $(function() {
         target.find("#pspt_date").attr("id", "pspt_date_" + emp.id).text(emp.pspt_date);
         target.find("#pspt_name").attr("id", "pspt_name_" + emp.id).text(emp.pspt_name);
         target.find("#rental_name").attr("id", "rental_" + emp.id).text(DB.choice(emp.rental));
-        // 削除ボタンにid属性を付与しておく
+        // 各ボタンにid属性を付与しておく
         target.find(".emp-remove-btn").attr("data-emp-id", emp.id);
+        target.find(".addr-adding-btn").attr("data-emp-id", emp.id);
+        target.find(".family-adding-btn").attr("data-emp-id", emp.id);
+        target.find(".edu-adding-btn").attr("data-emp-id", emp.id);
         
         // 画像・氏名変更
         target.find("#img-emp").attr("id", "img-emp_" + emp.id).attr("src", 'img/' + emp.id + '.jpg');
@@ -110,6 +113,7 @@ $(function() {
         $(".emps-area").append(target);
     });
 
+    // 社員削除ボタン
     $(".emp-remove-btn").each(function(index, element) {
         $(element).on("click", function() {
             var id = parseInt($(this).attr("data-emp-id"));
@@ -117,6 +121,27 @@ $(function() {
                 alasql('DELETE FROM emp WHERE id=?', [ id ]);
                 window.location.assign('index.html');
             }
+        });
+    });
+    // 住所追加ボタン
+    $(".addr-adding-btn").each(function(index, element) {
+        $(element).on("click", function() {
+            var id = parseInt($(this).attr("data-emp-id"));
+            location.href = "addr-form.html?emp=" + id;
+        });
+    });
+    // 家族追加
+    $(".family-adding-btn").each(function(index, element) {
+        $(element).on("click", function() {
+            var id = parseInt($(this).attr("data-emp-id"));
+            location.href = "family-form.html?emp=" + id;
+        });
+    });
+    // 学歴
+    $(".edu-adding-btn").each(function(index, element) {
+        $(element).on("click", function() {
+            var id = parseInt($(this).attr("data-emp-id"));
+            location.href = "edu-form.html?emp=" + id;
         });
     });
 });
