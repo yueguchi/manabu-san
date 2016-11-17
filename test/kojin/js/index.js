@@ -3,6 +3,8 @@ var q1 = $.url().param("q1");
 $('input[name="q1"]').val(q1);
 var q2 = $.url().param("q2");
 $('input[name="q2"]').val(q2);
+var q3 = $.url().param("q3");
+$('input[name="q3"]').val(q3);
 
 // データベース読み込み
 var emps;
@@ -13,6 +15,38 @@ if(q1) {
     emps = alasql('SELECT * FROM emp WHERE name_kanji LIKE ? OR name_kana LIKE ?', [q2, q2]);
 } else {
     emps = alasql('SELECT * FROM emp', []);
+}
+if (q3) {
+    emps = alasql(
+        "select * from emp " +
+        "WHERE name_kanji LIKE ? " +
+        "OR name_kana LIKE ? " +
+        "OR number LIKE ? " +
+        "OR birthday LIKE ? " +
+        "OR tel LIKE ? " +
+        "OR ctct_name LIKE ? " +
+        "OR ctct_addr LIKE ? " +
+        "OR ctct_tel LIKE ? " +
+        "OR pspt_no LIKE ? " +
+        "OR pspt_date LIKE ? " +
+        "OR pspt_name LIKE ? " +
+        "OR rental LIKE ?"
+        ,
+        [
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+        ]);
 }
 
 // 社員一覧の表示
