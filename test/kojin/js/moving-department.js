@@ -19,7 +19,7 @@ for (var i = 0; i < departments.length; i++) {
         var emp = emps[y];
         var departmenrName = DB.getDepartment(emp.department);
         if (departmenrName === departments[i].name) {
-            var tag = "<li data-emp-id='" + emp.id + "' data-department-id='" + departments[i].id + "'>" + "<img class='small-emp-img' src='/img/" + emp.id +  ".jpg'>" + emp.name_kanji + "</li>";
+            var tag = "<li data-emp-id='" + emp.id + "' data-department-id='" + departments[i].id + "'>" + "<img class='small-emp-img' src='../img/" + emp.id +  ".jpg'>" + emp.name_kanji + "</li>";
             target.find(".emps-list").append(tag);
         }
     }
