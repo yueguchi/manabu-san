@@ -3,11 +3,16 @@ $(function() {
     // 身上読込
     var ids = $.url().param("ids");
     $.each(ids.split(","), function(index, id) {
+        console.log("debug....");
         // 社員情報
-        var emp = alasql('SELECT * FROM emp WHERE id = ?', parseInt(id))[0];
+        var emp = alasql('SELECT*FROM emp WHERE id=?', parseInt(id))[0];
+        console.log("id: " + id);
+        for (var e in emp) {
+            console.log("プロパティ: " + e);
+        }
         var target = $(".copy-hidden-area").clone();
         target.removeClass("copy-hidden-area");
-        target.find("#number").attr("id", "number_" + emp.id).text(emp.number);;
+        target.find("#number").attr("id", "number_" + emp.id).text(emp.number);
         target.find("#name_kanji").attr("id", "name_kanji_" + emp.id).text(emp.name_kanji);;
         target.find("#name_kana").attr("id", "name_kana_" + emp.id).text(emp.name_kana);;
         target.find("#sex").attr("id", "sex_" + emp.id).text(DB.choice(emp.sex));
