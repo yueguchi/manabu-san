@@ -90,5 +90,9 @@ id,name,code
 ・moving-department.html
 省略
 
+・moving-department.js
+省略
+
+・ライブラリ(jquery.ui)
 
 ```
