@@ -6,10 +6,6 @@ $(function() {
         console.log("debug....");
         // 社員情報
         var emp = alasql('SELECT*FROM emp WHERE id=?', parseInt(id))[0];
-        console.log("id: " + id);
-        for (var e in emp) {
-            console.log("プロパティ: " + e);
-        }
         var target = $(".copy-hidden-area").clone();
         target.removeClass("copy-hidden-area");
         target.find("#number").attr("id", "number_" + emp.id).text(emp.number);
@@ -43,11 +39,13 @@ $(function() {
         target.find("#copy-addr-tab").attr("id", "copy-addr-tab_" + emp.id).attr("href", "#addr_" + emp.id);
         target.find("#copy-family-tab").attr("id", "copy-family-tab_" + emp.id).attr("href", "#family_" + emp.id);
         target.find("#copy-education-tab").attr("id", "copy-education-tab_" + emp.id).attr("href", "#education_" + emp.id);
+        target.find("#copy-department-tab").attr("id", "copy-department-tab_" + emp.id).attr("href", "#department_" + emp.id);
         // tabの中身も操作
         target.find("#profile").attr("id", "profile_" + emp.id);
         target.find("#addr").attr("id", "addr_" + emp.id);
         target.find("#family").attr("id", "family_" + emp.id);
         target.find("#education").attr("id", "education_" + emp.id);
+        target.find("#department").attr("id", "department_" + emp.id);
         
         // 住所情報
         // 住所情報読み込み
@@ -113,6 +111,15 @@ $(function() {
         // id書き換え
         target.find("#tbody-edu").attr("id", "tbody-edu" + emp.id);
         target.find("#ins-edu").attr("id", "ins-edu" + emp.id);
+
+        // 部署情報
+        // 部署情報取得
+        var dept = DB.getDepartment(emp.department);
+        var tr = $('<tr>').appendTo(target.find('#tbody-dept'));
+        tr.append('<td>' + dept + '</td>');
+        // id書き換え
+        target.find("#tbody-dept").attr("id", "tbody-dept" + emp.id);
+
         
         target.show();
         $(".emps-area").append(target);

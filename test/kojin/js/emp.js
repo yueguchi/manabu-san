@@ -79,6 +79,11 @@ for (var i = 0; i < edus.length; i++) {
 }
 $('#ins-edu').attr("href", 'edu-form.html?emp=' + id);
 
+// 部署情報取得
+var dept = DB.getDepartment(emp.department);
+var tr = $('<tr>').appendTo('#tbody-dept');
+tr.append('<td>' + dept + '</td>');
+
 // 社員削除
 function destroy() {
     if (window.confirm('削除は取り消せません。よろしいですか？')) {
