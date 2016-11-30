@@ -117,6 +117,10 @@ $(function() {
         var dept = DB.getDepartment(emp.department);
         var tr = $('<tr>').appendTo(target.find('#tbody-dept'));
         tr.append('<td>' + dept + '</td>');
+        var td = $('<td class="text-right">').appendTo(tr);
+        $('<a href="dept-form.html?id=' + emp.id + '" class="btn btn-xs btn-primary">').html(
+            '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
+        
         // id書き換え
         target.find("#tbody-dept").attr("id", "tbody-dept" + emp.id);
 
