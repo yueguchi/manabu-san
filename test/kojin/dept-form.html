@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+    <script src="lib/alasql.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="js/db.js"></script>
     <meta charset="utf-8">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="cache-control" content="no-cache">
     <meta name="viewport" content="width=device-width">
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <script src="lib/jquery.min.js"></script>
-    <script src="lib/bootstrap.min.js"></script>
-    <script src="lib/alasql.min.js"></script>
-    <script src="lib/purl.js"></script>
-    <script src="js/db.js"></script>
     <title>COMPANY</title>
 </head>
 <body>
@@ -53,47 +57,47 @@
     </nav>
     
     <div class="container">
-        <form action="index.html" class="for-m-inline text-center">
-            <div class="form-group">
-                <input name="q1" type="text" class="form-control" placeholder="社員番号">
-            </div>
-            <div class="form-group">
-                <input name="q2" type="text" class="form-control" placeholder="氏名の一部">
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <span class="glyphicon glyphicon-search"></span>検索
-            </button>
-            <div class="form-group">
-                <input name="q3" type="text" class="form-control" placeholder="フリーワード検索">
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <span class="glyphicon glyphicon-search"></span>検索
-            </button>
-        </form>
-        <hr>
+        <ol class="breadcrumb">
+            <li>
+                <a href="index.html">社員一覧</a>
+            </li>
+            <li>
+                <a id="nav-emp">新規</a>
+            </li>
+            <li class="active">
+                <span>部署</span>
+            </li>
+        </ol>
         
-        <div class="clearfix" style="margin: 10px 0;">
-            <a href="emp-form.html" class="btn btn-success pull-right"><span class="glyphicon glyphicon-plus"></span>新規</a>
-            <a id="empsDetailBtn" class="btn btn-success pull-left" disabled><span class="glyphicon glyphicon-user"></span>まとめて詳細</a>
+        <!-- Abstract -->
+        <div class="media" style="margin-bottom: 20px;">
+            <div class="media-left">
+                <img id="img-emp" src="" width=75 height=100 alt="">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading" id="div-name_kanji"></h4>
+                <div id="div-name_kana"></div>
+                <div id="div-number"></div>
+            </div>
         </div>
         
-        <table class="table table-striped">
-            <thead>
+        <div class="clear-fix" style="margin: 10px 0;">
+            <button class="btn btn-sm btn-success pull-right" onclick="update();">
+                <span class="glyphicon glyphicon-ok"></span> 保存
+            </button>
+        </div>
+        
+        <table class="table form-inline">
+            <tbody>
                 <tr>
-                    <th></th>
-                    <th></th>
-                    <th>社員番号</th>
-                    <th>氏名(漢字)</th>
-                    <th>氏名(カナ)</th>
-                    <th>性別</th>
-                    <th>生年月日</th>
-                    <th>連絡先電話番号</th>
+                    <td class="col-sm-2">所属部署</td>
+                    <td class="col-sm-10" id="dept">
+                        <select class="form-control"></select>
+                    </td>
                 </tr>
-            </thead>
-            <tbody id="tbody-emps">
             </tbody>
         </table>
     </div>
-    <script src="js/index.js"></script>
+    <script src="js/dept-form.js"></script>
 </body>
 </html>

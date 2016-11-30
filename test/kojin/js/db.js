@@ -58,13 +58,6 @@ DB.load = function() {
 
     // 部署情報
     alasql('DROP TABLE IF EXISTS department;');
-    alasql('CREATE TABLE department(id INT IDENTITY, name STRING, code STRING);');
-    var pdepartment = alasql.promise('SELECT MATRIX * FROM CSV("data/DEPARTMENT-DEPARTMENT.csv", {headers: true})').then(
-        function(departments) {
-            for (var i = 0; i < departments.length; i++) {
-                alasql('INSERT INTO department VALUES(?,?,?);', departments[i]);
-            }
-        });
         
     // リロード
     Promise.all([ pemp, paddr, pfamily, pedu, pchoice]).then(function() {
@@ -92,9 +85,9 @@ DB.choices = function(name) {
 };
 
 DB.getDepartment = function(departmentId) {
-    var departments = alasql('SELECT name FROM department WHERE id = ?', [ departmentId ]);
+    var departments = alasql('SELECT text FROM choice WHERE id = ?', [ departmentId ]);
     if (departments.length) {
-        return departments[0].name;
+        return departments[0].text;
     } else {
         return '';
     }

@@ -83,6 +83,10 @@ $('#ins-edu').attr("href", 'edu-form.html?emp=' + id);
 var dept = DB.getDepartment(emp.department);
 var tr = $('<tr>').appendTo('#tbody-dept');
 tr.append('<td>' + dept + '</td>');
+var td = $('<td class="text-right">').appendTo(tr);
+$('<a href="dept-form.html?id=' + emp.id + '" class="btn btn-xs btn-primary">').html(
+    '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
+$('<span> </span>').appendTo(td);
 
 // 社員削除
 function destroy() {
