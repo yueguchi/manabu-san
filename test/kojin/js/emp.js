@@ -80,13 +80,18 @@ for (var i = 0; i < edus.length; i++) {
 $('#ins-edu').attr("href", 'edu-form.html?emp=' + id);
 
 // 部署情報取得
-var dept = DB.getDepartment(emp.department);
-var tr = $('<tr>').appendTo('#tbody-dept');
-tr.append('<td>' + dept + '</td>');
-var td = $('<td class="text-right">').appendTo(tr);
-$('<a href="dept-form.html?id=' + emp.id + '" class="btn btn-xs btn-primary">').html(
-    '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
-$('<span> </span>').appendTo(td);
+var depts = alasql('SELECT * FROM department WHERE emp = ?', [ id ]);
+for (var i = 0; i < depts.length; i++) {
+    var dept = depts[i];
+    var deptName = DB.getDepartment(dept.department);
+    var tr = $('<tr>').appendTo('#tbody-dept');
+    tr.append('<td>' + deptName + '</td>');
+    var td = $('<td class="text-right">').appendTo(tr);
+    $('<a href="dept-form.html?id=' + dept.id + '" class="btn btn-xs btn-primary">').html(
+        '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
+    $('<span> </span>').appendTo(td);
+}
+$('#ins-dept').attr("href", 'dept-form.html?emp=' + id);
 
 // 社員削除
 function destroy() {

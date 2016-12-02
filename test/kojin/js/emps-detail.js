@@ -3,7 +3,6 @@ $(function() {
     // 身上読込
     var ids = $.url().param("ids");
     $.each(ids.split(","), function(index, id) {
-        console.log("debug....");
         // 社員情報
         var emp = alasql('SELECT*FROM emp WHERE id=?', parseInt(id))[0];
         var target = $(".copy-hidden-area").clone();
@@ -114,9 +113,10 @@ $(function() {
 
         // 部署情報
         // 部署情報取得
-        var dept = DB.getDepartment(emp.department);
+        var dept = alasql('SELECT * FROM department WHERE emp = ?', [ emp.id ])[0];
+        var deptName = DB.getDepartment(dept.department);
         var tr = $('<tr>').appendTo(target.find('#tbody-dept'));
-        tr.append('<td>' + dept + '</td>');
+        tr.append('<td>' + deptName + '</td>');
         var td = $('<td class="text-right">').appendTo(tr);
         $('<a href="dept-form.html?id=' + emp.id + '" class="btn btn-xs btn-primary">').html(
             '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
