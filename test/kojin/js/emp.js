@@ -39,7 +39,7 @@ for(var i = 0; i < addrs.length; i++) {
     $('<a href="addr-form.html?id=' + addr.id + '" class="btn btn-xs btn-primary">').html(
         '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
     $('<span> </span>').appendTo(td);
-    $('<a class="btn btn-xs btn-danger">').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
+    $('<a class="btn btn-xs btn-danger delete-btn" data-type="addr" data-id=' + addr.id + '>').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
 }
 $('#ins-addr').attr('href', 'addr-form.html?emp=' + id);
 
@@ -59,7 +59,7 @@ for(var i = 0; i < families.length; i++) {
     $('<a href="family-form.html?id=' + family.id + '" class="btn btn-xs btn-primary">').html(
         '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
     $('<span> </span>').appendTo(td);
-    $('<a class="btn btn-xs btn-danger">').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
+    $('<a class="btn btn-xs btn-danger delete-btn" data-type="family" data-id=' + family.id + '>').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
 }
 $('#ins-family').attr("href", 'family-form.html?emp=' + id);
 
@@ -75,7 +75,7 @@ for (var i = 0; i < edus.length; i++) {
     $('<a href="edu-form.html?id=' + edu.id + '" class="btn btn-xs btn-primary">').html(
         '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
     $('<span> </span>').appendTo(td);
-    $('<a class="btn btn-xs btn-danger">').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
+    $('<a class="btn btn-xs btn-danger delete-btn" data-type="edu" data-id=' + edu.id + '>').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
 }
 $('#ins-edu').attr("href", 'edu-form.html?emp=' + id);
 
@@ -90,8 +90,22 @@ for (var i = 0; i < depts.length; i++) {
     $('<a href="dept-form.html?id=' + dept.id + '" class="btn btn-xs btn-primary">').html(
         '<span class="glyphicon glyphicon-pencil"></span> 編集').appendTo(td);
     $('<span> </span>').appendTo(td);
+    $('<a class="btn btn-xs btn-danger delete-btn" data-type="department" data-id=' + dept.id + '>').html('<span class="glyphicon glyphicon-remove"></span> 削除').appendTo(td);
 }
 $('#ins-dept').attr("href", 'dept-form.html?emp=' + id);
+
+/** 削除ボタン処理  */
+$(".delete-btn").each(function(index, element) {
+    $(element).on("click", function() {
+        var ret = confirm("削除します。よろしいですか？");
+        if (ret) {
+            var targetTable = $(this).attr("data-type");
+            var id = $(this).attr("data-id");
+            alasql('delete from ' + targetTable + ' where id = ?', parseInt(id));
+            location.reload();
+        }
+    });
+});
 
 // 社員削除
 function destroy() {

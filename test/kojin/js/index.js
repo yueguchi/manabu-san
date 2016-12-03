@@ -47,6 +47,121 @@ if (q3) {
             '%' + q3 + '%',
             '%' + q3 + '%',
         ]);
+    // empを見に行く
+    eduEmps = alasql(
+        'SELECT emp.* FROM emp JOIN edu ON emp.id = edu.emp WHERE edu.school LIKE ? OR edu.major LIKE ?'
+        ,
+        [
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+        ]
+    );
+    if (emps.length === 0) {
+        emps = eduEmps;
+    }
+    // addrも見に行く
+    addrEmps = alasql(
+        'SELECT emp.* FROM emp JOIN addr ON emp.id = addr.emp WHERE addr.city LIKE ? OR addr.street LIKE ? OR addr.bldg LIKE ?'
+        ,
+        [
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+        ]
+    );
+    if (emps.length === 0) {
+        emps = addrEmps;
+    }
+    // ファミリー
+    familyEmps = alasql(
+        'SELECT emp.* FROM emp JOIN family ON emp.id = family.emp WHERE family.name_kanji LIKE ? OR family.name_kana LIKE ? OR family.relation LIKE ?'
+        ,
+        [
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+            '%' + q3 + '%',
+        ]
+    );
+    if (emps.length === 0) {
+        emps = familyEmps;
+    }
+    
+    // その他(CHOICE関連)
+    // sex
+    sexEmps = alasql(
+        'select emp.* from emp join choice ON emp.sex = choice.id where choice.text LIKE ?'
+        , ['%' + q3 + '%']
+    );
+    if (emps.length === 0) {
+        emps = sexEmps;
+    }
+    // house
+    houseEmps = alasql(
+        'select emp.* from emp join addr ON emp.id = addr.emp JOIN choice ON addr.house = choice.id where choice.text LIKE ?'
+        , ['%' + q3 + '%']
+    );
+    if (emps.length === 0) {
+        emps = houseEmps;
+    }
+    // state
+    stateEmps = alasql(
+        'select emp.* from emp join addr ON emp.id = addr.emp JOIN choice ON addr.state = choice.id where choice.text LIKE ?'
+        , ['%' + q3 + '%']
+    );
+    if (emps.length === 0) {
+        emps = stateEmps;
+    }
+    // 所属部署
+    deptEmps = alasql(
+        'select emp.* from emp join department ON emp.id = department.emp JOIN choice ON department.department = choice.id where choice.text LIKE ?'
+        , ['%' + q3 + '%']
+    );
+    if (emps.length === 0) {
+        emps = deptEmps;
+    }
+    
+    
+    // マージ
+     var ids = [];
+     $.each(emps, function(index, emp) {
+         ids.push(emp.id);
+     });
+    // edu
+    $.each(eduEmps, function(index, eduEmp) {
+        if (ids.indexOf(eduEmp.id) < 0) {
+            emps.push(eduEmp);
+        }
+    });
+    // addr
+    $.each(addrEmps, function(index, addrEmp) {
+        if (ids.indexOf(addrEmp.id) < 0) {
+            emps.push(addrEmp);
+        }
+    });
+    // sex
+    $.each(sexEmps, function(index, sexEmp) {
+        if (ids.indexOf(sexEmp.id) < 0) {
+            emps.push(sexEmp);
+        }
+    });
+    // house
+    $.each(houseEmps, function(index, houseEmp) {
+        if (ids.indexOf(houseEmp.id) < 0) {
+            emps.push(houseEmp);
+        }
+    });
+    // state
+    $.each(stateEmps, function(index, stateEmp) {
+        if (ids.indexOf(stateEmp.id) < 0) {
+            emps.push(stateEmp);
+        }
+    });
+    // 所属部署
+    $.each(deptEmps, function(index, deptEmp) {
+        if (ids.indexOf(deptEmp.id) < 0) {
+            emps.push(deptEmp);
+        }
+    });
 }
 
 // 社員一覧の表示
