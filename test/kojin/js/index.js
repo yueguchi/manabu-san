@@ -18,6 +18,7 @@ if (q1) {
 }
 if (q3) {
     var refines = q3.split(" ");
+    var rets = [];
     $.each(refines, function(index, q3) {
         emps = alasql(
             "select * from emp " +
@@ -152,7 +153,22 @@ if (q3) {
                 emps.push(deptEmp);
             }
         });
+        // retsに存在しないempなら、retsに詰める
+        var retIds = [];
+        $.each(rets, function(index, ret) {
+            retIds.push(ret.id);
+        });
+        if (retIds.length > 0) {
+            $.each(emps, function(index, emp) {
+                if (retIds.indexOf(emp.id) < 0) {
+                    rets.push(emp);
+                }
+            });
+        } else {
+            rets = emps;
+        }
     });
+    emps = rets;
 }
 
 // 社員一覧の表示
