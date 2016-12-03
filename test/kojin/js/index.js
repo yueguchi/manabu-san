@@ -188,18 +188,21 @@ for (var i = 0; i < emps.length; i++) {
 }
 
 // 一括詳細ボタン
-$("#empsDetailBtn").on("click", function(event) {
+$("#empsListBtn").on("click", function(event) {
+    if ($("#empsListBtn").attr("disabled")) {
+        return false;
+    }
     var empIds = [];
     $(".emps-checks:checked").each(function(index, element) {
         empIds.push($(element).parent().parent().attr("data-emp-id"));
     });
-    location.href = "emps-detail.html?ids=" + empIds.join(",");
+    location.href = "emps-list.html?ids=" + empIds.join(",");
 });
 
 $("#tbody-emps").on("change", ".emps-checks", function() {
     if ($(".emps-checks:checked").length > 0) {
-        $("#empsDetailBtn").attr("disabled", false);
+        $("#empsListBtn").attr("disabled", false);
     } else {
-        $("#empsDetailBtn").attr("disabled", true);
+        $("#empsListBtn").attr("disabled", true);
     }
 });
