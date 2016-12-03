@@ -196,7 +196,7 @@ $("#empsListBtn").on("click", function(event) {
     $(".emps-checks:checked").each(function(index, element) {
         empIds.push($(element).parent().parent().attr("data-emp-id"));
     });
-    location.href = "emps-list.html?ids=" + empIds.join(",");
+    window.open("emps-list.html?ids=" + empIds.join(","), "_blank");
 });
 
 $("#tbody-emps").on("change", ".emps-checks", function() {
