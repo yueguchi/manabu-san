@@ -208,7 +208,7 @@ $("#tbody-emps").on("change", ".emps-checks", function() {
 });
 
 // サジェスト候補生成
-var empsSuggests = alasql('SELECT id, name_kanji, name_kana FROM emp');
+var empsSuggests = alasql('SELECT number, name_kanji, name_kana FROM emp');
 var addrSuggests = alasql('SELECT zip, city, street, bldg FROM addr');
 var eduSuggests = alasql('SELECT school, major FROM edu');
 var familySuggests = alasql('SELECT name_kanji, name_kana, relation FROM family');
@@ -217,7 +217,7 @@ var choiceSuggests = alasql('SELECT text FROM choice');
 // 社員番号サジェスト生成
 var empIdSuggestArea = $("#emp-id-suggest");
 $.each(empsSuggests, function(index, emp) {
-    empIdSuggestArea.append('<option value="' + emp.id + '">');
+    empIdSuggestArea.append('<option value="' + emp.number + '">');
 });
 
 // 社員氏名サジェスト
