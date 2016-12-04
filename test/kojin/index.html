@@ -55,23 +55,20 @@
     <div class="container">
         <form action="index.html" class="for-m-inline text-center">
             <div class="form-group">
-                <input name="q1" type="text" class="form-control" placeholder="社員番号" list="emp-id-suggest">
-                <datalist id="emp-id-suggest">
+                <input name="q1" type="text" class="form-control" placeholder="フリーワード検索(and)" list="and-suggest">
+                <datalist id="and-suggest">
                   
                 </datalist>
             </div>
             <div class="form-group">
-                <input name="q2" type="text" class="form-control" placeholder="氏名の一部" list="emp-name-suggest">
-                <datalist id="emp-name-suggest">
+                <input name="q2" type="text" class="form-control" placeholder="フリーワード検索(or)" list="or-suggest">
+                <datalist id="or-suggest">
                   
                 </datalist>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <span class="glyphicon glyphicon-search"></span>検索
-            </button>
             <div class="form-group">
-                <input name="q3" type="text" class="form-control" placeholder="フリーワード検索" list="freeword-suggest">
-                <datalist id="freeword-suggest">
+                <input name="q3" type="text" class="form-control" placeholder="フリーワード検索(not)" list="not-suggest">
+                <datalist id="not-suggest">
                   
                 </datalist>
             </div>

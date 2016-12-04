@@ -13,7 +13,6 @@ var tbody = $("#tbody-emps");
 for (var i = 0; i < emps.length; i++) {
     var emp = emps[i];
     var tr = $('<tr data-emp-id="' + emp.id + '"></tr>');
-    tr.append('<td><input type="checkbox" value="1" class="emps-checks" name="employees-checks"></td>');
     tr.append('<td><img height=40 class="img-circle" src="img/' + emp.id + '.jpg"></td>');
     tr.append('<td><a href="emp.html?id=' + emp.id + '">' + emp.number + '</a></td>');
     tr.append('<td>' + emp.name_kanji + '</td>');

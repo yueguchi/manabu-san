@@ -7,19 +7,157 @@ var q3 = $.url().param("q3");
 $('input[name="q3"]').val(q3);
 
 // データベース読み込み
-var emps;
+var emps = [];
+// and検索
 if (q1) {
-    emps = alasql('SELECT * FROM emp WHERE number LIKE ? ', ['%' + q1 + '%']);
+    var orRet = getOrKeywordEmps(q1);
+    // andで絞りこむ
+    var deleteIndexes = [];
+    $.each(orRet, function(index1, emp) {
+        $.each(q1.split(" "), function(index2, q) {
+            var isContainFlg = false;
+            $.each(Object.keys(emp), function(index3, key) {
+                if (parseInt(("" + emp[key]).indexOf(q)) >= 0) {
+                    isContainFlg = true;
+                }
+            });
+            if (isContainFlg === false) {
+                if (deleteIndexes.indexOf(index1) === -1) {
+                    deleteIndexes.push(index1);
+                }
+            }
+        });
+    });
+    $.each(deleteIndexes, function(index, deleteIndex) {
+        delete orRet[deleteIndex];
+    });
+    var andRet = [];
+    $.each(orRet, function(index, emp) {
+        if (emp !== undefined) {
+            andRet.push(emp);
+        }
+    });
+    emps = andRet;
 } else if (q2) {
-    q2 = '%' + q2 + '%';
-    emps = alasql('SELECT * FROM emp WHERE name_kanji LIKE ? OR name_kana LIKE ?', [q2, q2]);
+    // or検索
+    emps = getOrKeywordEmps(q2);
+} else if (q3) {
+    // not検索
+    
 } else {
-    emps = alasql('SELECT * FROM emp', []);
+    // デフォルト
+    emps = alasql('SELECT * FROM emp');
 }
-if (q3) {
-    var refines = q3.split(" ");
+
+// 社員一覧の表示
+var tbody = $("#tbody-emps");
+for (var i = 0; i < emps.length; i++) {
+    var emp = emps[i];
+    var tr = $('<tr data-emp-id="' + emp.id + '"></tr>');
+    tr.append('<td><input type="checkbox" value="1" class="emps-checks" name="employees-checks"></td>');
+    tr.append('<td><img height=40 class="img-circle" src="img/' + emp.id + '.jpg"></td>');
+    tr.append('<td><a href="emp.html?id=' + emp.id + '">' + emp.number + '</a></td>');
+    tr.append('<td>' + emp.name_kanji + '</td>');
+    tr.append('<td>' + emp.name_kana + '</td>');
+    tr.append('<td>' + DB.choice(emp.sex) + '</td>');
+    tr.append('<td>' + emp.birthday + '</td>');
+    tr.append('<td>' + emp.tel + '</td>');
+    tr.appendTo(tbody);
+}
+
+// 別ウィンドウで社員リストを開くボタン
+$("#empsListBtn").on("click", function(event) {
+    if ($("#empsListBtn").attr("disabled")) {
+        return false;
+    }
+    var empIds = [];
+    $(".emps-checks:checked").each(function(index, element) {
+        empIds.push($(element).parent().parent().attr("data-emp-id"));
+    });
+    window.open("emps-list.html?ids=" + empIds.join(","), "_blank");
+});
+// チェックボックスチェック処理
+$("#tbody-emps").on("change", ".emps-checks", function() {
+    if ($(".emps-checks:checked").length > 0) {
+        $("#empsListBtn").attr("disabled", false);
+    } else {
+        $("#empsListBtn").attr("disabled", true);
+    }
+});
+
+// サジェスト候補生成
+var empsSuggests = alasql('SELECT number, name_kanji, name_kana FROM emp');
+var addrSuggests = alasql('SELECT zip, city, street, bldg FROM addr');
+var eduSuggests = alasql('SELECT school, major FROM edu');
+var familySuggests = alasql('SELECT name_kanji, name_kana, relation FROM family');
+var choiceSuggests = alasql('SELECT text FROM choice');
+
+// フリーワードサジェスト生成
+var andSuggestArea = $("#and-suggest");
+var orSuggestArea = $("#or-suggest");
+var notSuggestArea = $("#not-suggest");
+$.each(empsSuggests, function(index, emp) {
+    andSuggestArea.append('<option value="' + emp.name_kanji + '">');
+    andSuggestArea.append('<option value="' + emp.name_kana + '">');
+    
+    orSuggestArea.append('<option value="' + emp.name_kanji + '">');
+    orSuggestArea.append('<option value="' + emp.name_kana + '">');
+    
+    notSuggestArea.append('<option value="' + emp.name_kanji + '">');
+    notSuggestArea.append('<option value="' + emp.name_kana + '">');
+});
+$.each(addrSuggests, function(index, addr) {
+    andSuggestArea.append('<option value="' + addr.zip + '">');
+    andSuggestArea.append('<option value="' + addr.city + '">');
+    andSuggestArea.append('<option value="' + addr.street + '">');
+    andSuggestArea.append('<option value="' + addr.bldg + '">');
+    
+    orSuggestArea.append('<option value="' + addr.zip + '">');
+    orSuggestArea.append('<option value="' + addr.city + '">');
+    orSuggestArea.append('<option value="' + addr.street + '">');
+    orSuggestArea.append('<option value="' + addr.bldg + '">');
+    
+    notSuggestArea.append('<option value="' + addr.zip + '">');
+    notSuggestArea.append('<option value="' + addr.city + '">');
+    notSuggestArea.append('<option value="' + addr.street + '">');
+    notSuggestArea.append('<option value="' + addr.bldg + '">');
+});
+$.each(eduSuggests, function(index, edu) {
+    andSuggestArea.append('<option value="' + edu.school + '">');
+    andSuggestArea.append('<option value="' + edu.major + '">');
+    
+    orSuggestArea.append('<option value="' + edu.school + '">');
+    orSuggestArea.append('<option value="' + edu.major + '">');
+    
+    notSuggestArea.append('<option value="' + edu.school + '">');
+    notSuggestArea.append('<option value="' + edu.major + '">');
+});
+$.each(familySuggests, function(index, family) {
+    andSuggestArea.append('<option value="' + family.name_kanji + '">');
+    andSuggestArea.append('<option value="' + family.name_kana + '">');
+    andSuggestArea.append('<option value="' + family.relation + '">');
+    
+    orSuggestArea.append('<option value="' + family.name_kanji + '">');
+    orSuggestArea.append('<option value="' + family.name_kana + '">');
+    orSuggestArea.append('<option value="' + family.relation + '">');
+    
+    notSuggestArea.append('<option value="' + family.name_kanji + '">');
+    notSuggestArea.append('<option value="' + family.name_kana + '">');
+    notSuggestArea.append('<option value="' + family.relation + '">');
+});
+$.each(choiceSuggests, function(index, choice) {
+    andSuggestArea.append('<option value="' + choice.text + '">');
+    
+    orSuggestArea.append('<option value="' + choice.text + '">');
+    
+    notSuggestArea.append('<option value="' + choice.text + '">');
+});
+
+// 関数
+function getOrKeywordEmps(q) {
+    var refines = q.split(" ");
     var rets = [];
-    $.each(refines, function(index, q3) {
+    $.each(refines, function(index, q) {
         emps = alasql(
             "select * from emp " +
             "WHERE name_kanji LIKE ? " +
@@ -34,25 +172,25 @@ if (q3) {
             "OR pspt_date LIKE ? " +
             "OR pspt_name LIKE ? " +
             "OR rental LIKE ?", [
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
             ]);
-        // empを見に行く
+        // eduを見に行く
         eduEmps = alasql(
-            'SELECT emp.* FROM emp JOIN edu ON emp.id = edu.emp WHERE edu.school LIKE ? OR edu.major LIKE ?', [
-                '%' + q3 + '%',
-                '%' + q3 + '%',
+            'SELECT emp.*, edu.school, edu.major FROM emp JOIN edu ON emp.id = edu.emp WHERE edu.school LIKE ? OR edu.major LIKE ?', [
+                '%' + q + '%',
+                '%' + q + '%',
             ]
         );
         if (emps.length === 0) {
@@ -60,10 +198,10 @@ if (q3) {
         }
         // addrも見に行く
         addrEmps = alasql(
-            'SELECT emp.* FROM emp JOIN addr ON emp.id = addr.emp WHERE addr.city LIKE ? OR addr.street LIKE ? OR addr.bldg LIKE ?', [
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
+            'SELECT emp.*, addr.city, addr.street, addr.bldg FROM emp JOIN addr ON emp.id = addr.emp WHERE addr.city LIKE ? OR addr.street LIKE ? OR addr.bldg LIKE ?', [
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
             ]
         );
         if (emps.length === 0) {
@@ -71,10 +209,10 @@ if (q3) {
         }
         // ファミリー
         familyEmps = alasql(
-            'SELECT emp.* FROM emp JOIN family ON emp.id = family.emp WHERE family.name_kanji LIKE ? OR family.name_kana LIKE ? OR family.relation LIKE ?', [
-                '%' + q3 + '%',
-                '%' + q3 + '%',
-                '%' + q3 + '%',
+            'SELECT emp.*, family.name_kanji as family_kanji, family.name_kana as family_kana, family.relation FROM emp JOIN family ON emp.id = family.emp WHERE family.name_kanji LIKE ? OR family.name_kana LIKE ? OR family.relation LIKE ?', [
+                '%' + q + '%',
+                '%' + q + '%',
+                '%' + q + '%',
             ]
         );
         if (emps.length === 0) {
@@ -84,28 +222,28 @@ if (q3) {
         // その他(CHOICE関連)
         // sex
         sexEmps = alasql(
-            'select emp.* from emp join choice ON emp.sex = choice.id where choice.text LIKE ?', ['%' + q3 + '%']
+            'select emp.*, chouce.text as sex_name from emp join choice ON emp.sex = choice.id where choice.text LIKE ?', ['%' + q + '%']
         );
         if (emps.length === 0) {
             emps = sexEmps;
         }
         // house
         houseEmps = alasql(
-            'select emp.* from emp join addr ON emp.id = addr.emp JOIN choice ON addr.house = choice.id where choice.text LIKE ?', ['%' + q3 + '%']
+            'select emp.*, choice.text as house_name from emp join addr ON emp.id = addr.emp JOIN choice ON addr.house = choice.id where choice.text LIKE ?', ['%' + q + '%']
         );
         if (emps.length === 0) {
             emps = houseEmps;
         }
         // state
         stateEmps = alasql(
-            'select emp.* from emp join addr ON emp.id = addr.emp JOIN choice ON addr.state = choice.id where choice.text LIKE ?', ['%' + q3 + '%']
+            'select emp.*, choice.text as state_name from emp join addr ON emp.id = addr.emp JOIN choice ON addr.state = choice.id where choice.text LIKE ?', ['%' + q + '%']
         );
         if (emps.length === 0) {
             emps = stateEmps;
         }
         // 所属部署
         deptEmps = alasql(
-            'select emp.* from emp join department ON emp.id = department.emp JOIN choice ON department.department = choice.id where choice.text LIKE ?', ['%' + q3 + '%']
+            'select emp.*, choice.text as dept_name from emp join department ON emp.id = department.emp JOIN choice ON department.department = choice.id where choice.text LIKE ?', ['%' + q + '%']
         );
         if (emps.length === 0) {
             emps = deptEmps;
@@ -168,86 +306,5 @@ if (q3) {
             rets = emps;
         }
     });
-    emps = rets;
+    return rets;
 }
-
-// 社員一覧の表示
-var tbody = $("#tbody-emps");
-for (var i = 0; i < emps.length; i++) {
-    var emp = emps[i];
-    var tr = $('<tr data-emp-id="' + emp.id + '"></tr>');
-    tr.append('<td><input type="checkbox" value="1" class="emps-checks" name="employees-checks"></td>');
-    tr.append('<td><img height=40 class="img-circle" src="img/' + emp.id + '.jpg"></td>');
-    tr.append('<td><a href="emp.html?id=' + emp.id + '">' + emp.number + '</a></td>');
-    tr.append('<td>' + emp.name_kanji + '</td>');
-    tr.append('<td>' + emp.name_kana + '</td>');
-    tr.append('<td>' + DB.choice(emp.sex) + '</td>');
-    tr.append('<td>' + emp.birthday + '</td>');
-    tr.append('<td>' + emp.tel + '</td>');
-    tr.appendTo(tbody);
-}
-
-// 別ウィンドウで社員リストを開くボタン
-$("#empsListBtn").on("click", function(event) {
-    if ($("#empsListBtn").attr("disabled")) {
-        return false;
-    }
-    var empIds = [];
-    $(".emps-checks:checked").each(function(index, element) {
-        empIds.push($(element).parent().parent().attr("data-emp-id"));
-    });
-    window.open("emps-list.html?ids=" + empIds.join(","), "_blank");
-});
-// チェックボックスチェック処理
-$("#tbody-emps").on("change", ".emps-checks", function() {
-    if ($(".emps-checks:checked").length > 0) {
-        $("#empsListBtn").attr("disabled", false);
-    } else {
-        $("#empsListBtn").attr("disabled", true);
-    }
-});
-
-// サジェスト候補生成
-var empsSuggests = alasql('SELECT number, name_kanji, name_kana FROM emp');
-var addrSuggests = alasql('SELECT zip, city, street, bldg FROM addr');
-var eduSuggests = alasql('SELECT school, major FROM edu');
-var familySuggests = alasql('SELECT name_kanji, name_kana, relation FROM family');
-var choiceSuggests = alasql('SELECT text FROM choice');
-
-// 社員番号サジェスト生成
-var empIdSuggestArea = $("#emp-id-suggest");
-$.each(empsSuggests, function(index, emp) {
-    empIdSuggestArea.append('<option value="' + emp.number + '">');
-});
-
-// 社員氏名サジェスト
-var empNameSuggestArea = $("#emp-name-suggest");
-$.each(empsSuggests, function(index, emp) {
-    empNameSuggestArea.append('<option value="' + emp.name_kanji + '">');
-    empNameSuggestArea.append('<option value="' + emp.name_kana + '">');
-});
-
-// フリーワードサジェスト生成
-var suggestArea = $("#freeword-suggest");
-$.each(empsSuggests, function(index, emp) {
-    suggestArea.append('<option value="' + emp.name_kanji + '">');
-    suggestArea.append('<option value="' + emp.name_kana + '">');
-});
-$.each(addrSuggests, function(index, addr) {
-    suggestArea.append('<option value="' + addr.zip + '">');
-    suggestArea.append('<option value="' + addr.city + '">');
-    suggestArea.append('<option value="' + addr.street + '">');
-    suggestArea.append('<option value="' + addr.bldg + '">');
-});
-$.each(eduSuggests, function(index, edu) {
-    suggestArea.append('<option value="' + edu.school + '">');
-    suggestArea.append('<option value="' + edu.major + '">');
-});
-$.each(familySuggests, function(index, family) {
-    suggestArea.append('<option value="' + family.name_kanji + '">');
-    suggestArea.append('<option value="' + family.name_kana + '">');
-    suggestArea.append('<option value="' + family.relation + '">');
-});
-$.each(choiceSuggests, function(index, choice) {
-    suggestArea.append('<option value="' + choice.text + '">');
-});
