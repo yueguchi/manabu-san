@@ -187,7 +187,7 @@ for (var i = 0; i < emps.length; i++) {
     tr.appendTo(tbody);
 }
 
-// 一括詳細ボタン
+// 別ウィンドウで社員リストを開くボタン
 $("#empsListBtn").on("click", function(event) {
     if ($("#empsListBtn").attr("disabled")) {
         return false;
@@ -198,11 +198,56 @@ $("#empsListBtn").on("click", function(event) {
     });
     window.open("emps-list.html?ids=" + empIds.join(","), "_blank");
 });
-
+// チェックボックスチェック処理
 $("#tbody-emps").on("change", ".emps-checks", function() {
     if ($(".emps-checks:checked").length > 0) {
         $("#empsListBtn").attr("disabled", false);
     } else {
         $("#empsListBtn").attr("disabled", true);
     }
+});
+
+// サジェスト候補生成
+var empsSuggests = alasql('SELECT id, name_kanji, name_kana FROM emp');
+var addrSuggests = alasql('SELECT zip, city, street, bldg FROM addr');
+var eduSuggests = alasql('SELECT school, major FROM edu');
+var familySuggests = alasql('SELECT name_kanji, name_kana, relation FROM family');
+var choiceSuggests = alasql('SELECT text FROM choice');
+
+// 社員番号サジェスト生成
+var empIdSuggestArea = $("#emp-id-suggest");
+$.each(empsSuggests, function(index, emp) {
+    empIdSuggestArea.append('<option value="' + emp.id + '">');
+});
+
+// 社員氏名サジェスト
+var empNameSuggestArea = $("#emp-name-suggest");
+$.each(empsSuggests, function(index, emp) {
+    empNameSuggestArea.append('<option value="' + emp.name_kanji + '">');
+    empNameSuggestArea.append('<option value="' + emp.name_kana + '">');
+});
+
+// フリーワードサジェスト生成
+var suggestArea = $("#freeword-suggest");
+$.each(empsSuggests, function(index, emp) {
+    suggestArea.append('<option value="' + emp.name_kanji + '">');
+    suggestArea.append('<option value="' + emp.name_kana + '">');
+});
+$.each(addrSuggests, function(index, addr) {
+    suggestArea.append('<option value="' + addr.zip + '">');
+    suggestArea.append('<option value="' + addr.city + '">');
+    suggestArea.append('<option value="' + addr.street + '">');
+    suggestArea.append('<option value="' + addr.bldg + '">');
+});
+$.each(eduSuggests, function(index, edu) {
+    suggestArea.append('<option value="' + edu.school + '">');
+    suggestArea.append('<option value="' + edu.major + '">');
+});
+$.each(familySuggests, function(index, family) {
+    suggestArea.append('<option value="' + family.name_kanji + '">');
+    suggestArea.append('<option value="' + family.name_kana + '">');
+    suggestArea.append('<option value="' + family.relation + '">');
+});
+$.each(choiceSuggests, function(index, choice) {
+    suggestArea.append('<option value="' + choice.text + '">');
 });
