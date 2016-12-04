@@ -43,7 +43,19 @@ if (q1) {
     emps = getOrKeywordEmps(q2);
 } else if (q3) {
     // not検索
-    
+    var orEmps = getOrKeywordEmps(q3);
+    var orIds = [];
+    $.each(orEmps, function(index, orEmp) {
+        orIds.push(orEmp.id);
+    });
+    var allEmps = alasql('SELECT * FROM emp');
+    var notEmps = [];
+    $.each(allEmps, function(index, emp) {
+        if (orIds.indexOf(emp.id) === -1) {
+            notEmps.push(emp);
+        }
+    });
+    emps = notEmps;
 } else {
     // デフォルト
     emps = alasql('SELECT * FROM emp');
