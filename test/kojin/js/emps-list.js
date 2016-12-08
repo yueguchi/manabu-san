@@ -1,7 +1,7 @@
-var ids = $.url().param("ids");
+var ids = $.url().param('ids');
 var emps = [];
 $.each(ids.split(","), function(index, id) {
-    var emp = alasql('SELECT * from emp WHERE id = ?', parseInt(id))[0];
+    var emp = alasql('SELECT * from emp WHERE id = ?', [parseInt(id)])[0];
     if (!emp) {
         alert("id = " + id + "の従業員は存在しません。");
     } else {

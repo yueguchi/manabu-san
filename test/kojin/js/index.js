@@ -1,4 +1,6 @@
 // リクエストパラメータを取得
+var q0 = $.url().param("q0");
+$('input[name="q0"]').val(q0);
 var q1 = $.url().param("q1");
 $('input[name="q1"]').val(q1);
 var q2 = $.url().param("q2");
@@ -8,8 +10,52 @@ $('input[name="q3"]').val(q3);
 
 // データベース読み込み
 var emps = [];
-// and検索
-if (q1) {
+// and or複合検索
+if (q0) {
+    var orRet = getOrKeywordEmps(q0);
+    // andで絞りこむ
+    var deleteIndexes = [];
+    $.each(orRet, function (index1, emp) {
+        $.each(q0.split(" "), function (index2, q) {
+            var isContainFlg = false;
+            $.each(Object.keys(emp), function (index3, key) {
+                if (parseInt(("" + emp[key]).indexOf(q)) >= 0) {
+                    isContainFlg = true;
+                }
+            });
+            if (isContainFlg === false) {
+                if (deleteIndexes.indexOf(index1) === -1) {
+                    deleteIndexes.push(index1);
+                }
+            }
+        });
+    });
+    $.each(deleteIndexes, function (index, deleteIndex) {
+        delete orRet[deleteIndex];
+    });
+    var andRet = [];
+    $.each(orRet, function (index, emp) {
+        if (emp !== undefined) {
+            andRet.push(emp);
+        }
+    });
+    // or
+    orRet = getOrKeywordEmps(q0);
+    // and
+    // andとまーじ
+    var orIds = [];
+    $.each(orRet, function(index, emp) {
+        orIds.push(emp["id"]);
+    });
+
+    $.each(andRet, function(index, emp) {
+        // 存在しなければマージする
+        if (orIds.indexOf(emp["id"]) < 0) {
+            orRet.push(emp);
+        }
+    });
+    emps = orRet;
+} else if (q1) {
     var orRet = getOrKeywordEmps(q1);
     // andで絞りこむ
     var deleteIndexes = [];
@@ -105,10 +151,14 @@ var familySuggests = alasql('SELECT name_kanji, name_kana, relation FROM family'
 var choiceSuggests = alasql('SELECT text FROM choice');
 
 // フリーワードサジェスト生成
+var andOrSuggestArea = $("#andor-suggest");
 var andSuggestArea = $("#and-suggest");
 var orSuggestArea = $("#or-suggest");
 var notSuggestArea = $("#not-suggest");
 $.each(empsSuggests, function(index, emp) {
+    andOrSuggestArea.append('<option value="' + emp.name_kanji + '">');
+    andOrSuggestArea.append('<option value="' + emp.name_kana + '">');
+
     andSuggestArea.append('<option value="' + emp.name_kanji + '">');
     andSuggestArea.append('<option value="' + emp.name_kana + '">');
     
@@ -119,6 +169,11 @@ $.each(empsSuggests, function(index, emp) {
     notSuggestArea.append('<option value="' + emp.name_kana + '">');
 });
 $.each(addrSuggests, function(index, addr) {
+    andOrSuggestArea.append('<option value="' + addr.zip + '">');
+    andOrSuggestArea.append('<option value="' + addr.city + '">');
+    andOrSuggestArea.append('<option value="' + addr.street + '">');
+    andOrSuggestArea.append('<option value="' + addr.bldg + '">');
+
     andSuggestArea.append('<option value="' + addr.zip + '">');
     andSuggestArea.append('<option value="' + addr.city + '">');
     andSuggestArea.append('<option value="' + addr.street + '">');
@@ -135,6 +190,9 @@ $.each(addrSuggests, function(index, addr) {
     notSuggestArea.append('<option value="' + addr.bldg + '">');
 });
 $.each(eduSuggests, function(index, edu) {
+    andOrSuggestArea.append('<option value="' + edu.school + '">');
+    andOrSuggestArea.append('<option value="' + edu.major + '">');
+
     andSuggestArea.append('<option value="' + edu.school + '">');
     andSuggestArea.append('<option value="' + edu.major + '">');
     
@@ -145,6 +203,10 @@ $.each(eduSuggests, function(index, edu) {
     notSuggestArea.append('<option value="' + edu.major + '">');
 });
 $.each(familySuggests, function(index, family) {
+    andOrSuggestArea.append('<option value="' + family.name_kanji + '">');
+    andOrSuggestArea.append('<option value="' + family.name_kana + '">');
+    andOrSuggestArea.append('<option value="' + family.relation + '">');
+
     andSuggestArea.append('<option value="' + family.name_kanji + '">');
     andSuggestArea.append('<option value="' + family.name_kana + '">');
     andSuggestArea.append('<option value="' + family.relation + '">');
@@ -158,6 +220,8 @@ $.each(familySuggests, function(index, family) {
     notSuggestArea.append('<option value="' + family.relation + '">');
 });
 $.each(choiceSuggests, function(index, choice) {
+    andOrSuggestArea.append('<option value="' + choice.text + '">');
+
     andSuggestArea.append('<option value="' + choice.text + '">');
     
     orSuggestArea.append('<option value="' + choice.text + '">');

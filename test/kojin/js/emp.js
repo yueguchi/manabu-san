@@ -1,5 +1,5 @@
 // 身上読込
-var id = parseInt($.url().param("id"));
+var id = parseInt($.url().param('id'));
 var emp = alasql('SELECT * FROM emp WHERE id=?', [ id ])[0];
 
 $("#number").text(emp.number);
