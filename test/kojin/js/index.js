@@ -1,5 +1,5 @@
 // リクエストパラメータを取得
-var searchTarget = $.url().param("t");
+var searchTarget = $.url().param("t") ? $.url().param("t") : "emp";
 $('select[name="t"]').val(searchTarget);
 var q0 = $.url().param("q0");
 $('input[name="q0"]').val(q0);
