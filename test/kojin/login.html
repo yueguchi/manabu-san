@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="lib/jquery.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="lib/bootstrap.min.js"></script>
+    <script src="lib/alasql.min.js"></script>
+    <script src="lib/purl.js"></script>
+    <script src="js/db.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>COMPANY</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">COMPANY</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="index.html">個人情報管理</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-cog"></span>システム<span></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a onclick="window.location.reload(true);"><span class="glyphicon glyphicon-refresh"></span>リロード</a>
+                        </li>
+                        <li>
+                            <a onclick="DB.init();"><span class="glyphicon glyphicon-repeat"></span>DB初期化</a>
+                        </li>
+                        <li>
+                            <a onclick="DB.remove();"><span class="glyphicon glyphicon-trush"></span>DB削除</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+    <div id="errMessage"></div>
+    <form action="index.html" id="loginForm" class="form-inline text-center">
+        <div class="form-group">
+            <input name="id" type="text" class="form-control" placeholder="あなたの社員番号" />
+            <input name="pw" type="text" class="form-control" placeholder="パスワード" />
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-search"></span>ログイン
+        </button>
+    </form>
+    <hr>
+
+    <table class="table table-striped">
+    </table>
+</div>
+<script src="js/login.js"></script>
+</body>
+</html>
