@@ -13,6 +13,7 @@ var tbody = $("#tbody-emps");
 for (var i = 0; i < emps.length; i++) {
     var emp = emps[i];
     var tr = $('<tr data-emp-id="' + emp.id + '"></tr>');
+    tr.append('<td><input class="emps-checks" type="checkbox" value="' + emp.id + '" </td>');
     tr.append('<td><img height=40 class="img-circle" src="img/' + emp.id + '.jpg"></td>');
     tr.append('<td><a href="emp.html?id=' + emp.id + '">' + emp.number + '</a></td>');
     tr.append('<td>' + emp.name_kanji + '</td>');
@@ -34,8 +35,18 @@ $("#empsListBtn").on("click", function(event) {
 
 $("#tbody-emps").on("change", ".emps-checks", function() {
     if ($(".emps-checks:checked").length > 0) {
-        $("#empsDetailBtn").attr("disabled", false);
+        $("#notifyBtn").attr("disabled", false);
     } else {
-        $("#empsDetailBtn").attr("disabled", true);
+        $("#notifyBtn").attr("disabled", true);
     }
+});
+
+$("#notifyBtn").on("click", function () {
+    var notifyIds = [];
+    localStorage.removeItem("notifyIds");
+    $(".emps-checks:checked").each(function (index, element) {
+        notifyIds.push($(this).val());
+    });
+    localStorage.setItem("notifyIds", notifyIds.join(","));
+    alert(notifyIds.join(",") + "をチームに追加しました！！");
 });
