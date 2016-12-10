@@ -1,4 +1,6 @@
 // リクエストパラメータを取得
+var searchTarget = $.url().param("t");
+$('select[name="t"]').val(searchTarget);
 var q0 = $.url().param("q0");
 $('input[name="q0"]').val(q0);
 var q1 = $.url().param("q1");
@@ -7,12 +9,14 @@ var q2 = $.url().param("q2");
 $('input[name="q2"]').val(q2);
 var q3 = $.url().param("q3");
 $('input[name="q3"]').val(q3);
+var searchSex = $.url().param("s");
+$('select[name="s"]').val(searchSex);
 
 // データベース読み込み
 var emps = [];
 // and or複合検索
 if (q0) {
-    var orRet = getOrKeywordEmps(q0);
+    var orRet = getOrKeywordEmps(q0, searchTarget, searchSex);
     // andで絞りこむ
     var deleteIndexes = [];
     $.each(orRet, function (index1, emp) {
@@ -40,7 +44,7 @@ if (q0) {
         }
     });
     // or
-    orRet = getOrKeywordEmps(q0);
+    orRet = getOrKeywordEmps(q0, searchTarget, searchSex);
     // and
     // andとまーじ
     var orIds = [];
@@ -56,7 +60,7 @@ if (q0) {
     });
     emps = orRet;
 } else if (q1) {
-    var orRet = getOrKeywordEmps(q1);
+    var orRet = getOrKeywordEmps(q1, searchTarget, searchSex);
     // andで絞りこむ
     var deleteIndexes = [];
     $.each(orRet, function(index1, emp) {
@@ -86,10 +90,10 @@ if (q0) {
     emps = andRet;
 } else if (q2) {
     // or検索
-    emps = getOrKeywordEmps(q2);
+    emps = getOrKeywordEmps(q2, searchTarget, searchSex);
 } else if (q3) {
     // not検索
-    var orEmps = getOrKeywordEmps(q3);
+    var orEmps = getOrKeywordEmps(q3, searchTarget, searchSex);
     var orIds = [];
     $.each(orEmps, function(index, orEmp) {
         orIds.push(orEmp.id);
@@ -229,100 +233,125 @@ $.each(choiceSuggests, function(index, choice) {
     notSuggestArea.append('<option value="' + choice.text + '">');
 });
 
-// 関数
-function getOrKeywordEmps(q) {
+/**
+ * q = フリーワード検索文字列
+ * searchTarget = 検索対象テーブル(emp|edu|address|dept|family)
+ * searchSex = 検索対象性別(男性|女性|男女)
+ */
+function getOrKeywordEmps(q, searchTarget, searchSex) {
     var refines = q.split(" ");
     var rets = [];
+    var emps = [];
+    var eduEmps = [];
+    var addrEmps = [];
+    var familyEmps = [];
+    var sexEmps = [];
+    var houseEmps = [];
+    var stateEmps = [];
+    var deptEmps = [];
+
     $.each(refines, function(index, q) {
-        emps = alasql(
-            "select * from emp " +
-            "WHERE name_kanji LIKE ? " +
-            "OR name_kana LIKE ? " +
-            "OR number LIKE ? " +
-            "OR birthday LIKE ? " +
-            "OR tel LIKE ? " +
-            "OR ctct_name LIKE ? " +
-            "OR ctct_addr LIKE ? " +
-            "OR ctct_tel LIKE ? " +
-            "OR pspt_no LIKE ? " +
-            "OR pspt_date LIKE ? " +
-            "OR pspt_name LIKE ? " +
-            "OR rental LIKE ?", [
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-            ]);
+        if (searchTarget === "emp") {
+            emps = alasql(
+                "select * from emp " +
+                "WHERE name_kanji LIKE ? " +
+                "OR name_kana LIKE ? " +
+                "OR number LIKE ? " +
+                "OR birthday LIKE ? " +
+                "OR tel LIKE ? " +
+                "OR ctct_name LIKE ? " +
+                "OR ctct_addr LIKE ? " +
+                "OR ctct_tel LIKE ? " +
+                "OR pspt_no LIKE ? " +
+                "OR pspt_date LIKE ? " +
+                "OR pspt_name LIKE ? " +
+                "OR rental LIKE ?", [
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                ]);
+        }
         // eduを見に行く
-        eduEmps = alasql(
-            'SELECT emp.*, edu.school, edu.major FROM emp JOIN edu ON emp.id = edu.emp WHERE edu.school LIKE ? OR edu.major LIKE ?', [
-                '%' + q + '%',
-                '%' + q + '%',
-            ]
-        );
-        if (emps.length === 0) {
-            emps = eduEmps;
+        if (searchTarget === "edu") {
+            eduEmps = alasql(
+                'SELECT emp.*, edu.school, edu.major FROM emp JOIN edu ON emp.id = edu.emp WHERE edu.school LIKE ? OR edu.major LIKE ?', [
+                    '%' + q + '%',
+                    '%' + q + '%',
+                ]
+            );
+            if (emps.length === 0) {
+                emps = eduEmps;
+            }
         }
         // addrも見に行く
-        addrEmps = alasql(
-            'SELECT emp.*, addr.city, addr.street, addr.bldg FROM emp JOIN addr ON emp.id = addr.emp WHERE addr.city LIKE ? OR addr.street LIKE ? OR addr.bldg LIKE ?', [
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-            ]
-        );
-        if (emps.length === 0) {
-            emps = addrEmps;
+        if (searchTarget === "addr") {
+            addrEmps = alasql(
+                'SELECT emp.*, addr.city, addr.street, addr.bldg FROM emp JOIN addr ON emp.id = addr.emp WHERE addr.city LIKE ? OR addr.street LIKE ? OR addr.bldg LIKE ?', [
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                ]
+            );
+            if (emps.length === 0) {
+                emps = addrEmps;
+            }
         }
-        // ファミリー
-        familyEmps = alasql(
-            'SELECT emp.*, family.name_kanji as family_kanji, family.name_kana as family_kana, family.relation FROM emp JOIN family ON emp.id = family.emp WHERE family.name_kanji LIKE ? OR family.name_kana LIKE ? OR family.relation LIKE ?', [
-                '%' + q + '%',
-                '%' + q + '%',
-                '%' + q + '%',
-            ]
-        );
-        if (emps.length === 0) {
-            emps = familyEmps;
+        if (searchTarget === "family") {
+            // ファミリー
+            familyEmps = alasql(
+                'SELECT emp.*, family.name_kanji as family_kanji, family.name_kana as family_kana, family.relation FROM emp JOIN family ON emp.id = family.emp WHERE family.name_kanji LIKE ? OR family.name_kana LIKE ? OR family.relation LIKE ?', [
+                    '%' + q + '%',
+                    '%' + q + '%',
+                    '%' + q + '%',
+                ]
+            );
+            if (emps.length === 0) {
+                emps = familyEmps;
+            }
         }
 
         // その他(CHOICE関連)
-        // sex
-        sexEmps = alasql(
-            'select emp.*, chouce.text as sex_name from emp join choice ON emp.sex = choice.id where choice.text LIKE ?', ['%' + q + '%']
-        );
-        if (emps.length === 0) {
+        if (searchTarget === "other") {
+            // house
+            houseEmps = alasql(
+                'select emp.*, choice.text as house_name from emp join addr ON emp.id = addr.emp JOIN choice ON addr.house = choice.id where choice.text LIKE ?', ['%' + q + '%']
+            );
+            if (emps.length === 0) {
+                emps = houseEmps;
+            }
+            // state
+            stateEmps = alasql(
+                'select emp.*, choice.text as state_name from emp join addr ON emp.id = addr.emp JOIN choice ON addr.state = choice.id where choice.text LIKE ?', ['%' + q + '%']
+            );
+            if (emps.length === 0) {
+                emps = stateEmps;
+            }
+            // 所属部署
+            deptEmps = alasql(
+                'select emp.*, choice.text as dept_name from emp join department ON emp.id = department.emp JOIN choice ON department.department = choice.id where choice.text LIKE ?', ['%' + q + '%']
+            );
+            if (emps.length === 0) {
+                emps = deptEmps;
+            }
+        }
+        // 性別 (1 or 2)で絞り込む
+        if (searchSex && emps.length > 0) {
+            $.each(emps, function(index, emp) {
+                if (searchSex == emp.sex) {
+                    sexEmps.push(emp);
+                }
+            });
             emps = sexEmps;
-        }
-        // house
-        houseEmps = alasql(
-            'select emp.*, choice.text as house_name from emp join addr ON emp.id = addr.emp JOIN choice ON addr.house = choice.id where choice.text LIKE ?', ['%' + q + '%']
-        );
-        if (emps.length === 0) {
-            emps = houseEmps;
-        }
-        // state
-        stateEmps = alasql(
-            'select emp.*, choice.text as state_name from emp join addr ON emp.id = addr.emp JOIN choice ON addr.state = choice.id where choice.text LIKE ?', ['%' + q + '%']
-        );
-        if (emps.length === 0) {
-            emps = stateEmps;
-        }
-        // 所属部署
-        deptEmps = alasql(
-            'select emp.*, choice.text as dept_name from emp join department ON emp.id = department.emp JOIN choice ON department.department = choice.id where choice.text LIKE ?', ['%' + q + '%']
-        );
-        if (emps.length === 0) {
-            emps = deptEmps;
         }
 
 

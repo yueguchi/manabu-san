@@ -54,6 +54,15 @@
     
     <div class="container">
         <form action="index.html" class="for-m-inline text-center">
+            <select name="t">
+                <option value="emp">身上</option>
+                <option value="address">住所</option>
+                <option value="family">家族</option>
+                <option value="edu">学歴</option>
+                <option value="dept">部署</option>
+                <option value="other">その他</option>
+            </select>
+            を
             <div class="form-group">
                 <input name="q0" type="text" class="form-control" placeholder="フリーワード検索" list="andor-suggest">
                 <datalist id="andor-suggest">
@@ -78,6 +87,13 @@
                   
                 </datalist>
             </div>
+            の
+            <select name="s">
+                <option value="">男女</option>
+                <option value="1">男性</option>
+                <option value="2">女性</option>
+            </select>
+            で
             <button type="submit" class="btn btn-primary">
                 <span class="glyphicon glyphicon-search"></span>検索
             </button>
