@@ -235,7 +235,7 @@ $.each(choiceSuggests, function(index, choice) {
 
 /**
  * q = フリーワード検索文字列
- * searchTarget = 検索対象テーブル(emp|edu|address|dept|family)
+ * searchTarget = 検索対象テーブル(emp|edu|addr|dept|family)
  * searchSex = 検索対象性別(男性|女性|男女)
  */
 function getOrKeywordEmps(q, searchTarget, searchSex) {
