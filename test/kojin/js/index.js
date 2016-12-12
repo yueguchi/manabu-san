@@ -109,6 +109,16 @@ if (q0) {
 } else {
     // デフォルト
     emps = alasql('SELECT * FROM emp');
+    // 性別 (1 or 2)で絞り込む
+    var sexEmps = [];
+    if (searchSex && emps.length > 0) {
+        $.each(emps, function(index, emp) {
+            if (searchSex == emp.sex) {
+                sexEmps.push(emp);
+            }
+        });
+        emps = sexEmps;
+    }
 }
 
 // 社員一覧の表示
