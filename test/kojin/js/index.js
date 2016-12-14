@@ -121,6 +121,10 @@ if (q0) {
     }
 }
 
+emps = emps.filter(function (x, i, self) {
+    return self.indexOf(x) === i;
+});
+
 // 社員一覧の表示
 var tbody = $("#tbody-emps");
 for (var i = 0; i < emps.length; i++) {
