@@ -122,7 +122,7 @@ if (q0) {
 }
 
 emps = emps.filter(function (x, i, self) {
-    return self.indexOf(x) === i;
+        return self.indexOf(x) === i;
 });
 
 // 社員一覧の表示
@@ -358,16 +358,6 @@ function getOrKeywordEmps(q, searchTarget, searchSex) {
                 emps = deptEmps;
             }
         }
-        // 性別 (1 or 2)で絞り込む
-        if (searchSex && emps.length > 0) {
-            $.each(emps, function(index, emp) {
-                if (searchSex == emp.sex) {
-                    sexEmps.push(emp);
-                }
-            });
-            emps = sexEmps;
-        }
-
 
         // マージ
         var ids = [];
@@ -384,12 +374,6 @@ function getOrKeywordEmps(q, searchTarget, searchSex) {
         $.each(addrEmps, function(index, addrEmp) {
             if (ids.indexOf(addrEmp.id) < 0) {
                 emps.push(addrEmp);
-            }
-        });
-        // sex
-        $.each(sexEmps, function(index, sexEmp) {
-            if (ids.indexOf(sexEmp.id) < 0) {
-                emps.push(sexEmp);
             }
         });
         // house
@@ -424,6 +408,16 @@ function getOrKeywordEmps(q, searchTarget, searchSex) {
         } else {
             rets = emps;
         }
+        
+        // 性別 (1 or 2)で絞り込む
+        if (searchSex && rets.length > 0) {
+            $.each(rets, function(index, emp) {
+                if (searchSex == emp.sex) {
+                    sexEmps.push(emp);
+                }
+            });
+        }
+        rets = sexEmps;
     });
     return rets;
 }
