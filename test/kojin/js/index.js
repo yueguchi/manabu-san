@@ -416,8 +416,8 @@ function getOrKeywordEmps(q, searchTarget, searchSex) {
                     sexEmps.push(emp);
                 }
             });
+            rets = sexEmps;
         }
-        rets = sexEmps;
     });
     return rets;
 }
