@@ -412,7 +412,7 @@ function getOrKeywordEmps(q, searchTarget, searchSex) {
         // 性別 (1 or 2)で絞り込む
         if (searchSex && rets.length > 0) {
             $.each(rets, function(index, emp) {
-                if (searchSex == emp.sex || searchSex == 0) {
+                if (searchSex == emp.sex || empty(searchSex)) {
                     sexEmps.push(emp);
                 }
             });
