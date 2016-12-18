@@ -22,7 +22,7 @@ $('#update').on('click', function() {
     var whouse = parseInt($('select[name="whouse"]').val());
     var item = parseInt($('select[name="item"]').val());
     var date = $('input[name="date"]').val();
-    var qty = parseInt($('input[name="aty"]').val());
+    var qty = parseInt($('input[name="qty"]').val());
     var memo = $('textarea[name="memo"]').val();
     
     // stockレコード更新
