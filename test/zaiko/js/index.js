@@ -52,6 +52,9 @@ for(var i = 0; i < stocks.length; i++) {
     tr.append('<td style="text-align: right;">' + numberWithCommas(stock.item.price) + '</td>');
     tr.append('<td style="text-align: right;">' + stock.stock.balance + '</td>');
     tr.append('<td>' + stock.item.unit + '</td>');
+    tr.append('<td style="text-align: right;">' + stock.stock.ave + '個</td>');
+    tr.append('<td style="text-align: right;">' + (stock.stock.ave !== 0 ? Math.floor(stock.stock.balance / stock.stock.ave) + '日' : '-') + '</td>');
+    tr.append('<td style="text-align: right;">' + stock.item.readdate + '日</td>');
     tr.appendTo(tbody);
 }
 
