@@ -35,10 +35,15 @@ for(var i = 0; i < rows.length; i++) {
 $('#update').on('click', function() {
     var date = $('input[name="date"]').val();
     var qty = parseInt($('input[name="qty"]').val());
+    balance = balance + qty;
+    if (balance < 0) {
+        alert("在庫が足りません");
+        return false;
+    }
     var memo = $('textarea[name="memo"]').val();
-    alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + qty, id ]);
+    alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance, id ]);
     var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, date, qty, balance + qty, memo]);
+    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, date, qty, balance, memo]);
 
     // 1日平均出荷数を算出
     // 本当はSQLでbetweenで範囲抽出したかったが、alasqlがクソなので、出荷itemだけを抽出する
@@ -76,16 +81,32 @@ $('#update').on('click', function() {
 
     // 自動発注処理
     // 出荷対応日数(現在在庫 / 1日平均出荷数)がリードタイム日数を下回っていたら、自動で発注(=入荷)をかける
-    var readTimeNissuu = alasql("select readdate from item where id = ?;", [id])[0].readdate;
+    var readTimeNissuu = alasql("select readdate from stock where id = ?;", [id])[0].readdate;
+    // 発注方法
+    var method = alasql("select method from stock where id = ?;", [id])[0].method;
     if (ave != 0 && Math.floor(balance / ave) < readTimeNissuu) {
         // 自動発注処理
-        // 発注する数は 1日当たりの平均出荷数 * 出荷対応日数 = 発注量(ただし、出荷対応日数が0なら、aveをそのまま発注かける)
-        var hattyuuCount = ave * (Math.floor(balance / ave) === 0 ? 1 : Math.floor(balance / ave));
-        // stock更新
-        alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, id ]);
-        // trans更新
-        var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-        alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "自動発注"]);
+        // 出荷時に自動発注がかかるのはmethod=1と2 つまり「不定期系」の発注。
+        if (method === 1) {
+            // 不定期不定量発注
+
+            // 発注する数は 1日当たりの平均出荷数 * 出荷対応日数 = 発注量(ただし、出荷対応日数が0なら、aveをそのまま発注かける)
+            var hattyuuCount = ave * (Math.floor(balance / ave) === 0 ? 1 : Math.floor(balance / ave));
+            // stock更新
+            alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, id ]);
+            // trans更新
+            var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[不定期不定量]自動発注"]);
+        } else if (method === 2) {
+            // 不定期定量発注
+            // stock更新
+            var hattyuuCount = alasql('SELECT routine_order_number from stock where id = ?', [id])[0].routine_order_number;
+            alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, id ]);
+            // trans更新
+            var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[不定期定量]自動発注"]);
+        }
+
     }
     window.location.assign('stock.html?id=' + id);
 

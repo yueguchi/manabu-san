@@ -54,11 +54,47 @@ for(var i = 0; i < stocks.length; i++) {
     tr.append('<td>' + stock.item.unit + '</td>');
     tr.append('<td style="text-align: right;">' + stock.stock.ave + '個</td>');
     tr.append('<td style="text-align: right;">' + (stock.stock.ave !== 0 ? Math.floor(stock.stock.balance / stock.stock.ave) + '日' : '-') + '</td>');
-    tr.append('<td style="text-align: right;">' + stock.item.readdate + '日</td>');
+    tr.append('<td style="text-align: right;">' + stock.stock.readdate + '日</td>');
+    var methoName = "不定期不定量";
+    if (stock.stock.method === 2) {
+        methoName = "不定期定量";
+    } else if (stock.stock.method === 3) {
+        methoName = "定期不定量";
+    }
+    tr.append(
+        '<td style="text-align: right;">' +
+            '<button ' +
+                'data-stock-id="' + stock.stock.id + '"' +
+                'class="btn btn-primary method-select-btn"' +
+                'style="font-size: 10px; width: 100px">' + methoName + '' +
+            '</button>' +
+        '</td>');
     tr.appendTo(tbody);
 }
 
 // クリック動作
 $('tbody > tr').css('cursor', 'pointer').on('click', function() {
     window.location = $(this).attr('data-href')
+});
+
+// 発注方法選択
+$(".method-select-btn").each(function(index, element) {
+    $(element).off("click").on("click", function(event) {
+        // tr親要素へのイベントバブリングを停止する
+        event.stopPropagation();
+        // アイテムIDをダイアログのdata属性に渡しておくことで、ダイアログでmethodボタンを押した時に更新したいアイテムidが特定できるようにする
+        var stockId = $(this).attr("data-stock-id");
+        $(".method-item-modal-body").attr("data-stock-id", stockId);
+        $('#modal_box').modal('show');
+    });
+});
+// 発注方法更新
+$(".method-select-item").off("click").on("click", function(event) {
+    var methodId = parseInt($(this).attr("data-method-id"));
+    var stockId = parseInt($(".method-item-modal-body").attr("data-stock-id"));
+    console.log("選択したmethod: " + methodId);
+    console.log("選択したstock-id: " + stockId);
+    // 更新
+    alasql('UPDATE stock SET method = ? where id = ?', [methodId, stockId]);
+    location.reload();
 });

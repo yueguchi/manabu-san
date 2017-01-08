@@ -12,6 +12,17 @@
     <script src="lib/purl.js"></script>
     <script src="js/db.js"></script>
     <title>COMPANY</title>
+    <style>
+        /* [参考]: http://coliss.com/articles/build-websites/operation/css/css3-flexbox-properties-by-scotch.html */
+        .flex {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: space-around;
+        }
+        .flex > li {
+            list-style-type: none;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-default">
@@ -95,11 +106,36 @@
                     <th>平均出荷数</th>
                     <th>出荷対応日数</th>
                     <th>リードタイム日数</th>
+                    <th>発注方法</th>
                 </tr>
             </thead>
             <tbody id="tbody-stocks"></tbody>
         </table>
     </div>
+    <div class="modal fade" id="modal_box">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">出荷方法を選択してください</h4>
+                </div>
+                <div class="modal-body method-item-modal-body">
+                    <ul class="flex">
+                        <li>
+                            <p><a class="btn btn-primary method-select-item" data-method-id="1" data-dismiss="modal" href="#">不定期不定量</a></p>
+                        </li>
+                        <li>
+                            <p><a class="btn btn-primary method-select-item" data-method-id="2" data-dismiss="modal" href="#">不定期定量</a></p>
+                        </li>
+                        <li>
+                            <p><a class="btn btn-primary method-select-item" data-method-id="3" data-dismiss="modal" href="#">定期不定量</a></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="js/index.js"></script>
+    <script src="js/common.js"></script>
 </body>
 </html>

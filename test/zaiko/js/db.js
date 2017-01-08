@@ -20,7 +20,7 @@ DB.load = function() {
     
     // アイテム
     alasql('DROP TABLE IF EXISTS item;');
-    alasql('CREATE TABLE item(id INT IDENTITY, code STRING, kind INT, detail STRING, maker STRING, price INT, unit STRING, readdate INT);');
+    alasql('CREATE TABLE item(id INT IDENTITY, code STRING, kind INT, detail STRING, maker STRING, price INT, unit STRING);');
     var pitem = alasql.promise('SELECT MATRIX * FROM CSV("data/ITEM-ITEM.csv", {headers: true})').then(
         function(items) {
             for (var i = 0; i < items.length; i++) {
@@ -43,13 +43,15 @@ DB.load = function() {
     // 在庫
     alasql('DROP TABLE IF EXISTS stock;');
     // 1/3 aveの追加
-    alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT, ave INT);');
+    // 1/7 自動発注ステータスの追加(METHOD)
+    // 1/7 定期定量発注時間と発注個数の追加(ROUTINE_ORDER_系の3つ)
+    alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT, ave INT, readdate INT, method INT,routine_order_minutes INT,routine_order_number INT, last_routine_date int);');
     var pstock = alasql.promise('SELECT MATRIX * FROM CSV("data/STOCK-STOCK.csv", {headers: true})').then(
         function(stocks) {
             for (var i = 0; i < stocks.length; i++) {
                 var stock = stocks[i];
                 // 1/3 aveの追加
-                alasql('INSERT INTO stock VALUES(?,?,?,?,?);', stock);
+                alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?);', stock);
             }
         });
         
