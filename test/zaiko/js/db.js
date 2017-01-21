@@ -45,13 +45,14 @@ DB.load = function() {
     // 1/3 aveの追加
     // 1/7 自動発注ステータスの追加(METHOD)
     // 1/7 定期定量発注時間と発注個数の追加(ROUTINE_ORDER_系の3つ)
-    alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT, ave INT, readdate INT, method INT,routine_order_minutes INT,routine_order_number INT, last_routine_date int);');
+    // 1/22 CCOUNT追加
+    alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT, ave INT, readdate INT, method INT,routine_order_minutes INT,routine_order_number INT, last_routine_date INT, ccount INT);');
     var pstock = alasql.promise('SELECT MATRIX * FROM CSV("data/STOCK-STOCK.csv", {headers: true})').then(
         function(stocks) {
             for (var i = 0; i < stocks.length; i++) {
                 var stock = stocks[i];
                 // 1/3 aveの追加
-                alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?);', stock);
+                alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?,?);', stock);
             }
         });
         
