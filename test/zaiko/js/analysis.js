@@ -51,8 +51,8 @@ $(function() {
         tr.append('<td>' + numberWithCommas(stock.item.price) + '円</td>'); // 単価
         tr.append('<td>' + numberWithCommas(stock.uriage) + '円</td>'); // 売り上げ
         tr.append('<td>' + numberWithCommas(uriageRuikei) + '円</td>'); // 売上累計
-        tr.append('<td>' + Math.floor((stock.uriage / amount) * 100) + '%</td>'); // 構成比
-        tr.append('<td>' + Math.floor((uriageRuikei / amount) * 100) + '%</td>'); // 累積構成比
+        tr.append('<td>' + (stock.uriage > 0 ? Math.floor((stock.uriage / amount) * 100) : 0) + '%</td>'); // 構成比
+        tr.append('<td>' + (uriageRuikei > 0 ? Math.floor((uriageRuikei / amount) * 100) : 0) + '%</td>'); // 累積構成比
 
         // 累積構成比が70%以下ならA
         // 71以上 ~ 95%以下ならB
