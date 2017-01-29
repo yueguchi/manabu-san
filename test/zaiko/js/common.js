@@ -21,26 +21,24 @@ $(function() {
             // yyyymmddHHiiで比較する
             // 現在時間から定期発注間隔(分)を引いた時間が最終発注時刻よりも未来であれば、自動発注をかける
             if (yyyymmddHHii - hattyuuInterval > lastTime) {
-                console.log("現在時刻 - マージン(分): " + (yyyymmddHHii - hattyuuInterval));
-                console.log("最終発注時刻: " + lastTime);
                 // 決まった日に発注するが、発注量はその都度必要量を検討して決める
                 var ave = parseInt(stock.ave) === 0 ? 1 : parseInt(stock.ave); // 0除算対策で、0なら1を入れる
                 var balance = parseInt(stock.balance);
 
                 // ユーザーに入力値を決めさせる
-                var hattyuuCount = prompt(data.item.detail + "の発注数を入力してください。");
-                var reg = new RegExp("^[0-9]+$");
-                // 0以上の数値の時だけ発注をかける
-                if (reg.test(hattyuuCount)) {
-                    hattyuuCount = parseInt(hattyuuCount);
-                    // stock更新(最終自動「定期不定量」発注の実行時間も更新)
-                    var id = stock.id;
-                    alasql('UPDATE stock SET balance = ?, last_routine_date = ? WHERE id = ?', [ balance + hattyuuCount, yyyymmddHHii, id ]);
-                    // trans更新
-                    var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-                    // トランザクションの更新
-                    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[定期不定量]自動発注"]);
-                }
+                //var hattyuuCount = prompt(data.item.detail + "の発注数を入力してください。");
+                //var reg = new RegExp("^[0-9]+$");
+                //// 0以上の数値の時だけ発注をかける
+                //if (reg.test(hattyuuCount)) {
+                //    hattyuuCount = parseInt(hattyuuCount);
+                //    // stock更新(最終自動「定期不定量」発注の実行時間も更新)
+                //    var id = stock.id;
+                //    alasql('UPDATE stock SET balance = ?, last_routine_date = ? WHERE id = ?', [ balance + hattyuuCount, yyyymmddHHii, id ]);
+                //    // trans更新
+                //    var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+                //    // トランザクションの更新
+                //    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[定期不定量]自動発注"]);
+                //}
             }
         });
     }, 1000);

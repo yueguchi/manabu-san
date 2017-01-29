@@ -12,17 +12,7 @@
     <script src="lib/purl.js"></script>
     <script src="js/db.js"></script>
     <title>COMPANY</title>
-    <style>
-        /* [参考]: http://coliss.com/articles/build-websites/operation/css/css3-flexbox-properties-by-scotch.html */
-        .flex {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: space-around;
-        }
-        .flex > li {
-            list-style-type: none;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/print.css" media="print"/>
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -48,7 +38,8 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>システム</a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                            class="glyphicon glyphicon-cog"></span>システム</a>
                     <ul class="dropdown-menu">
                         <li>
                             <a onclick="window.location.reload(true);"><span class="glyphicon glyphicon-refresh"></span>リロード</a>
@@ -66,49 +57,32 @@
     </div>
 </nav>
 
-<div class="container">
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>順位</th>
-            <th>コード</th>
-            <th>詳細</th>
-            <th>単価</th>
-            <th>売上高</th>
-            <th>売上累計</th>
-            <th>構成比</th>
-            <th>累積構成比</th>
-            <th>グループ</th>
-            <th>提案</th>
-        </tr>
-        </thead>
-        <tbody id="tbody-stocks"></tbody>
-    </table>
-</div>
-<div class="modal fade" id="modal_box">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">以下の発注方法をお勧めします</h4>
+<div class="print">
+        <h1>見積もり作成</h1>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>依頼先</th>
+                <th>倉庫</th>
+                <th>コード</th>
+                <th>メーカー</th>
+                <th>詳細</th>
+                <th>納期</th>
+                <th>価格</th>
+                <th>個数</th>
+            </tr>
+            </thead>
+            <tbody id="tbody-estimate"></tbody>
+        </table>
+        <section>
+            <div>
+                <h2>見積もり請求金額:<span id="sum-yen">000</span></h2>
+                <input type="button" class="btn btn-default btn-lg" value="印刷する" onclick="window.print();"/>
+                <button class="btn btn-danger btn-lg est-decide-btn">見積もり請求を送信する</button>
             </div>
-            <div class="modal-body method-item-modal-body">
-                <ul class="flex">
-                    <li>
-                        <p><a class="btn btn-primary method-select-item" data-method-id="1" data-dismiss="modal" href="#">不定期不定量</a></p>
-                    </li>
-                    <li>
-                        <p><a class="btn btn-primary method-select-item" data-method-id="2" data-dismiss="modal" href="#">不定期定量</a></p>
-                    </li>
-                    <li>
-                        <p><a class="btn btn-primary method-select-item" data-method-id="3" data-dismiss="modal" href="#">定期不定量</a></p>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+        </section>
 </div>
-<script src="js/analysis.js"></script>
+<script src="js/estimate.js"></script>
 <script src="js/common.js"></script>
 </body>
 </html>

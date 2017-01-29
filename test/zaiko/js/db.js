@@ -67,8 +67,19 @@ DB.load = function() {
             }
         });
 
+    // 見積もり依頼(みなし)一覧
+    alasql('DROP TABLE IF EXISTS request;');
+    alasql('CREATE TABLE request(id INT IDENTITY, item INT, rcount INT,rcompany STRING, souko STRING, status INT);');
+    var preqs = alasql.promise('SELECT MATRIX * FROM CSV("data/ESTIMATE-REQUEST.csv", {headers: true})').then(
+        function(reqs) {
+            for (var i = 0; i < reqs.length; i++) {
+                var req = reqs[i];
+                alasql('INSERT INTO request VALUES(?,?,?,?,?,?);', req);
+            }
+        });
+
     // リロード
-    Promise.all([ pkind, pitem, pwhouse, pstock, ptrans]).then(function() {
+    Promise.all([ pkind, pitem, pwhouse, pstock, ptrans, preqs]).then(function() {
         window.location.reload(true);
     });
 };
