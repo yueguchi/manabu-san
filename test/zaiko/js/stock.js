@@ -109,45 +109,4 @@ $('#update').on('click', function() {
 
     }
     window.location.assign('stock.html?id=' + id);
-
-    function zeroUme(target) {
-        switch (target.length) {
-            case 0:
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-            case 1:
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-            case 2:
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-            case 3:
-                target.push(0);
-                target.push(0);
-                target.push(0);
-                target.push(0);
-            case 4:
-                target.push(0);
-                target.push(0);
-                target.push(0);
-            case 5:
-                target.push(0);
-                target.push(0);
-            case 6:
-                target.push(0);
-        }
-        return target;
-    }
 });

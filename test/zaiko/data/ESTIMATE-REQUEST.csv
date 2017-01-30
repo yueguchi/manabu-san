@@ -1,2 +1,3 @@
-ID,item,rcount,rcompany,souko,status
-1,1,5,依頼会社A,,0
+ID,item,rcount,rcompany,souko,deliverydate,status
+1,1,5,依頼会社A,,,0
+2,3,10,依頼会社B,,,0

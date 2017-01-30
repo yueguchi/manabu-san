@@ -68,13 +68,14 @@ DB.load = function() {
         });
 
     // 見積もり依頼(みなし)一覧
+    // status 0 = 未処理 1=発注書送信ずみ 2=処理済み(出荷済み=trans反映済み)
     alasql('DROP TABLE IF EXISTS request;');
-    alasql('CREATE TABLE request(id INT IDENTITY, item INT, rcount INT,rcompany STRING, souko STRING, status INT);');
+    alasql('CREATE TABLE request(id INT IDENTITY, item INT, rcount INT,rcompany STRING, souko STRING, deliverydate date, status INT);');
     var preqs = alasql.promise('SELECT MATRIX * FROM CSV("data/ESTIMATE-REQUEST.csv", {headers: true})').then(
         function(reqs) {
             for (var i = 0; i < reqs.length; i++) {
                 var req = reqs[i];
-                alasql('INSERT INTO request VALUES(?,?,?,?,?,?);', req);
+                alasql('INSERT INTO request VALUES(?,?,?,?,?,?,?);', req);
             }
         });
 
