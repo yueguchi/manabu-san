@@ -53,52 +53,56 @@ $(function() {
             var count = request.rcount;
             var soukoName = request.souko;
             var soukoId = alasql('SELECT * FROM whouse WHERE name = ?', [soukoName])[0].whouse.id;
-            var yyyymmdd = request.deliverydate;
+            var yyyymmdd_shukka = request.deliverydate;
 
-            // 現在在庫情報
-            var zaiko = alasql('SELECT * FROM stock JOIN item ON stock.item = item.id JOIN request ON request.item = item.id JOIN whouse ON whouse.id = stock.whouse WHERE request.id = ? AND stock.whouse = ?', [request.id, soukoId])[0];
-
-            // 在庫更新
-            alasql('UPDATE stock SET balance = ? WHERE id = ?', [ zaiko.stock.balance - count, zaiko.stock.id ]);
-            // trans更新
-            var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, zaiko.stock.id, yyyymmdd, (-1 * count), zaiko.stock.balance - count, companyName + "様へ出荷"]);
-            // requestのstatus更新
-            alasql('UPDATE request SET status = 2 WHERE id = ?', [request.id]);
-
-            // 1日平均出荷数を算出
-            // 本当はSQLでbetweenで範囲抽出したかったが、alasqlがクソなので、出荷itemだけを抽出する
-            var shukko = alasql('SELECT * FROM trans WHERE stock = ? AND qty < 0', [ zaiko.stock.id ]);
-            // jsで日付絞り込みを行う
             var now = new Date();
             var yyyymmdd = now.getFullYear()+ "-" +
                 ( "0"+( now.getMonth()+1 ) ).slice(-2)+ "-" +
                 ( "0"+now.getDate() ).slice(-2);
-            var nowDate = new Date(yyyymmdd);
-            var targetTransQty = [];
-            $.each(shukko, function(index, data) {
-                if (data.trans.date) {
-                    var targetDate = new Date(data.trans.date);
-                    // 今日の日付 - 対象日付が一週間前以内なら対象とする
-                    if ((nowDate.getTime() - targetDate.getTime()) /(1000*60*60*24) <= 7) {
-                        targetTransQty.push(data.trans.qty*-1); // 個数を純粋に確保したいので、ここでマイナスを消す
-                    }
-                }
-            });
-            // 1週間の平均出荷数を求めるため、sizeが7に満たない場合は、配列を0で埋めてから計算する
-            if (targetTransQty.length < 7) {
-                targetTransQty = zeroUme(targetTransQty);
-            }
-            // 平均値の算出
-            var sum = 0;
-            $.each(targetTransQty, function(index, qty) {
-                sum += qty;
-            });
-            var ave = Math.floor(sum / 7);
-            // 1日平均出荷数の更新
-            alasql('UPDATE stock SET ave = ? WHERE id = ?', [ ave, zaiko.stock.id ]);
 
-            console.log(companyName + "様: 出荷処理完了(" + count + ")");
+            if (yyyymmdd >= yyyymmdd_shukka) {
+                // 現在在庫情報
+                var zaiko = alasql('SELECT * FROM stock JOIN item ON stock.item = item.id JOIN request ON request.item = item.id JOIN whouse ON whouse.id = stock.whouse WHERE request.id = ? AND stock.whouse = ?', [request.id, soukoId])[0];
+
+                // 在庫更新
+                alasql('UPDATE stock SET balance = ? WHERE id = ?', [ zaiko.stock.balance - count, zaiko.stock.id ]);
+                // trans更新
+                var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+                alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, zaiko.stock.id, yyyymmdd_shukka, (-1 * count), zaiko.stock.balance - count, companyName + "様へ出荷"]);
+                // requestのstatus更新
+                alasql('UPDATE request SET status = 2 WHERE id = ?', [request.id]);
+
+                
+                // 1日平均出荷数を算出
+                // 本当はSQLでbetweenで範囲抽出したかったが、alasqlがクソなので、出荷itemだけを抽出する
+                var shukko = alasql('SELECT * FROM trans WHERE stock = ? AND qty < 0', [ zaiko.stock.id ]);
+                // jsで日付絞り込みを行う
+                var nowDate = new Date(yyyymmdd);
+                var targetTransQty = [];
+                $.each(shukko, function(index, data) {
+                    if (data.trans.date) {
+                        var targetDate = new Date(data.trans.date);
+                        // 今日の日付 - 対象日付が一週間前以内なら対象とする
+                        if ((nowDate.getTime() - targetDate.getTime()) /(1000*60*60*24) <= 7) {
+                            targetTransQty.push(data.trans.qty*-1); // 個数を純粋に確保したいので、ここでマイナスを消す
+                        }
+                    }
+                });
+                // 1週間の平均出荷数を求めるため、sizeが7に満たない場合は、配列を0で埋めてから計算する
+                if (targetTransQty.length < 7) {
+                    targetTransQty = zeroUme(targetTransQty);
+                }
+                // 平均値の算出
+                var sum = 0;
+                $.each(targetTransQty, function(index, qty) {
+                    sum += qty;
+                });
+                var ave = Math.floor(sum / 7);
+                // 1日平均出荷数の更新
+                alasql('UPDATE stock SET ave = ? WHERE id = ?', [ ave, zaiko.stock.id ]);
+
+                console.log(companyName + "様: 出荷処理完了(" + count + ")");
+            }
         });
     }, 1000);
 
