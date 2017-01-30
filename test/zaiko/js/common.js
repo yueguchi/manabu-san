@@ -72,7 +72,7 @@ $(function() {
                 // requestのstatus更新
                 alasql('UPDATE request SET status = 2 WHERE id = ?', [request.id]);
 
-                
+
                 // 1日平均出荷数を算出
                 // 本当はSQLでbetweenで範囲抽出したかったが、alasqlがクソなので、出荷itemだけを抽出する
                 var shukko = alasql('SELECT * FROM trans WHERE stock = ? AND qty < 0', [ zaiko.stock.id ]);
@@ -130,6 +130,7 @@ function zeroUme(target) {
             target.push(0);
             target.push(0);
             target.push(0);
+            break;
         case 1:
             target.push(0);
             target.push(0);
@@ -137,26 +138,32 @@ function zeroUme(target) {
             target.push(0);
             target.push(0);
             target.push(0);
+            break;
         case 2:
             target.push(0);
             target.push(0);
             target.push(0);
             target.push(0);
             target.push(0);
+            break;
         case 3:
             target.push(0);
             target.push(0);
             target.push(0);
             target.push(0);
+            break;
         case 4:
             target.push(0);
             target.push(0);
             target.push(0);
+            break;
         case 5:
             target.push(0);
             target.push(0);
+            break;
         case 6:
             target.push(0);
+            break;
     }
     return target;
 }
