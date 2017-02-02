@@ -57,13 +57,14 @@ DB.load = function() {
         });
         
     // トランザクション
+    // 2/2 statusを追加 1で返品済みを表す
     alasql('DROP TABLE IF EXISTS trans;');
-    alasql('CREATE TABLE trans(id INT IDENTITY, stock INT, date DATE, qty INT, balance INT, memo STRING);');
+    alasql('CREATE TABLE trans(id INT IDENTITY, stock INT, date DATE, qty INT, balance INT, company STRING, memo STRING, status INT);');
     var ptrans = alasql.promise('SELECT MATRIX * FROM CSV("data/TRANS-TRANS.csv", {headers: true})').then(
         function(transs) {
             for (var i = 0; i < transs.length; i++) {
                 var trans = transs[i];
-                alasql('INSERT INTO trans VALUES(?,?,?,?,?,?);', trans);
+                alasql('INSERT INTO trans VALUES(?,?,?,?,?,?,?,?);', trans);
             }
         });
 

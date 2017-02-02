@@ -43,7 +43,7 @@ $('#update').on('click', function() {
     var memo = $('textarea[name="memo"]').val();
     alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance, id ]);
     var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, date, qty, balance, memo]);
+    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, date, qty, balance, "取引会社A", memo, 0]);
 
     // 1日平均出荷数を算出
     // 本当はSQLでbetweenで範囲抽出したかったが、alasqlがクソなので、出荷itemだけを抽出する
@@ -96,7 +96,7 @@ $('#update').on('click', function() {
             alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, id ]);
             // trans更新
             var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[不定期不定量]自動発注"]);
+            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "-", "[不定期不定量]自動発注", 0]);
         } else if (method === 2) {
             // 不定期定量発注
             // stock更新
@@ -104,7 +104,7 @@ $('#update').on('click', function() {
             alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, id ]);
             // trans更新
             var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[不定期定量]自動発注"]);
+            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "-", "[不定期定量]自動発注", 0]);
         }
 
     }

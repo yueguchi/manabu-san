@@ -37,7 +37,7 @@ $(function() {
                 //    // trans更新
                 //    var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
                 //    // トランザクションの更新
-                //    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[定期不定量]自動発注"]);
+                //    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?, ?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "[定期不定量]自動発注", 0]);
                 //}
             }
         });
@@ -68,7 +68,7 @@ $(function() {
                 alasql('UPDATE stock SET balance = ? WHERE id = ?', [ zaiko.stock.balance - count, zaiko.stock.id ]);
                 // trans更新
                 var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-                alasql('INSERT INTO trans VALUES (?,?,?,?,?,?)', [ trans_id, zaiko.stock.id, yyyymmdd_shukka, (-1 * count), zaiko.stock.balance - count, companyName + "様へ出荷"]);
+                alasql('INSERT INTO trans VALUES (?,?,?,?,?,?, ?)', [ trans_id, zaiko.stock.id, yyyymmdd_shukka, (-1 * count), zaiko.stock.balance - count, companyName + "様へ出荷", 0]);
                 // requestのstatus更新
                 alasql('UPDATE request SET status = 2 WHERE id = ?', [request.id]);
 

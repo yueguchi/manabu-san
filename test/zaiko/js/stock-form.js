@@ -38,7 +38,7 @@ $('#update').on('click', function() {
     }
     // transレコード追加
     var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-    alasql('INSERT INTO trans VALUES(?,?,?,?,?,?)', [ trans_id, stock_id, date, qty, balance + qty, memo ]);
+    alasql('INSERT INTO trans VALUES(?,?,?,?,?,?,?,?)', [ trans_id, stock_id, date, qty, balance + qty, "-", memo, 0 ]);
     // リロード
     window.location.assign('stock.html?id=' + stock_id);
 });
