@@ -59,26 +59,27 @@
     </nav>
     
     <div class="container">
-        <h1>入庫商品 検品リスト</h1>
-        <p>仕入先から入荷した商品に対して、不良品の返品が可能です</p>
-        <div class="clearfix" style="margin: 10px 0;">
-            <a href="returnAdmin.html" class="btn btn-success pull-left"><span class="glyphicon glyphicon-plus"></span>入庫残管理</a>
-        </div>
+        <h1>入庫残管理</h1>
+        <p>仕入先に返品したtrans情報を元に再入荷を管理します</p>
+        <p>1 ~ 返品した数まで再発注かけることができます。</p>
+        <p>「再発注」をかけたtransはstatus=0に更新され、再発注の対象外となりますので、お気をつけください。</p>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>仕入先</th>
                     <th>商品名</th>
-                    <th>個数</th>
+                    <th>現在在庫数</th>
+                    <th>入荷指示数</th>
                     <th>返品数</th>
+                    <th>実質入荷数</th>
+                    <th>再発注数</th>
                     <th></th>
-                    <th>備考</th>
                 </tr>
             </thead>
-            <tbody id="tbody-kenpins"></tbody>
+            <tbody id="tbody-items"></tbody>
         </table>
     </div>
-    <script src="js/index3.js"></script>
+    <script src="js/returnAdmin.js"></script>
     <script src="js/common.js"></script>
 </body>
 </html>
