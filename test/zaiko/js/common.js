@@ -106,6 +106,40 @@ $(function() {
         });
     }, 1000);
 
+    // 出荷処理
+    // 発注書にある入荷予定日が現在日付以下なら、出荷指示を行い、transとstockに実在庫更新かける
+    setInterval(function() {
+        var orders = alasql('SELECT * FROM porder WHERE status = 0');
+        for(var i = 0; i < orders.length; i++) {
+            var order = orders[i].porder;
+
+            var nyukaNum = parseInt(order.nyukadate);
+            var now = new Date();
+            var nowDate = now.getFullYear() +
+                ( "0"+( now.getMonth()+1 ) ).slice(-2)+
+                ( "0"+now.getDate() ).slice(-2);
+            // 加算
+            now.setDate(now.getDate() + nyukaNum);
+            var nyukaDate = now.getFullYear() +
+                ( "0"+( now.getMonth()+1 ) ).slice(-2) +
+                ( "0"+now.getDate() ).slice(-2);
+            // 現在日付以前なら、入荷処理を行う
+            if (nyukaDate <= nowDate) {
+                // 入荷処理
+
+                var stock = alasql('SELECT * FROM stock JOIN item ON stock.item = item.id WHERE item.detail = ?', [order.item])[0].stock;
+                var balance = parseInt(order.qty) + parseInt(stock.balance);
+                // stock
+                alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance, stock.id ]);
+                // trans
+                var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+                alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, stock.id, nyukaDate, order.qty, balance, order.company, order.memo, 0]);
+                // porderのstatusを1に変更
+                alasql('UPDATE porder SET status = 1 WHERE id = ?', [order.id]);
+            }
+        }
+    }, 1000);
+
     /**
      * 0埋め処理
      * @param num

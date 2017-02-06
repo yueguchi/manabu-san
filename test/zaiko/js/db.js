@@ -80,8 +80,21 @@ DB.load = function() {
             }
         });
 
+    // 発注書テーブル
+    // ID,company,item,qty,memo,status
+    alasql('DROP TABLE IF EXISTS porder;');
+    alasql('CREATE TABLE porder(id INT IDENTITY, company STRING, item STRING, qty INT, nyukadate INT, memo STRING, status INT);');
+    var porders = alasql.promise('SELECT MATRIX * FROM CSV("data/ORDER-ORDER.csv", {headers: true})').then(
+        function(orders) {
+            for (var i = 0; i < porders.length; i++) {
+                var order = porders[i];
+                alasql('INSERT INTO porder VALUES(?,?,?,?,?,?,?);', order);
+            }
+        });
+
+
     // リロード
-    Promise.all([ pkind, pitem, pwhouse, pstock, ptrans, preqs]).then(function() {
+    Promise.all([ pkind, pitem, pwhouse, pstock, ptrans, preqs, porders]).then(function() {
         window.location.reload(true);
     });
 };

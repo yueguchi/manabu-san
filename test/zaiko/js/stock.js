@@ -41,9 +41,23 @@ $('#update').on('click', function() {
         return false;
     }
     var memo = $('textarea[name="memo"]').val();
-    alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance, id ]);
-    var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, date, qty, balance, "取引会社A", memo, 0]);
+
+    // 2/6 ここで強制的に発注していたが、仕様変更が入った。
+    // 入荷なら発注書(porder)にinsertして、common.jsの中で定期的に回してその中でリードタイム日数を上まっていたら発注を行う
+    if (qty > 0) {
+        var itemName = $("#detail").text();
+        var readTimeNissuu = alasql("select readdate from stock where id = ?;", [id])[0].readdate;
+        // 出荷予定日数にリードタイム日数を入れる
+        var orderid = alasql('SELECT MAX(id) + 1 as id FROM porder')[0].id;
+        if (!orderid) {
+            orderid = 1;
+        }
+        alasql('INSERT INTO porder(id, company, item, qty, nyukadate, memo, status) values(?,?,?,?,?,?,?)', [orderid, "-", itemName, qty, readTimeNissuu, memo, 0]);
+    } else {
+        alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance, id ]);
+        var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+        alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, date, qty, balance, "取引会社A", memo, 0]);
+    }
 
     // 1日平均出荷数を算出
     // 本当はSQLでbetweenで範囲抽出したかったが、alasqlがクソなので、出荷itemだけを抽出する
@@ -106,7 +120,6 @@ $('#update').on('click', function() {
             var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
             alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "-", "[不定期定量]自動発注", 0]);
         }
-
     }
     window.location.assign('stock.html?id=' + id);
 });
