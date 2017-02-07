@@ -102,11 +102,48 @@ $(function() {
                 alasql('UPDATE stock SET ave = ? WHERE id = ?', [ ave, zaiko.stock.id ]);
 
                 console.log(companyName + "様: 出荷処理完了(" + count + ")");
+
+
+
+
+                // ↓↓↓在庫管理で行っていた不定期不定量・不定期定量自動発注を発注処理の中で行う↓↓↓
+
+                // 自動発注処理
+                // 出荷対応日数(現在在庫 / 1日平均出荷数)がリードタイム日数を下回っていたら、自動で発注(=入荷)をかける
+                var readTimeNissuu = alasql("select readdate from stock where id = ?;", [zaiko.stock.id])[0].readdate;
+                var balance = zaiko.stock.balance - count;
+                // 発注方法
+                var method = alasql("select method from stock where id = ?;", [zaiko.stock.id])[0].method;
+                if (ave != 0 && Math.floor(balance / ave) < readTimeNissuu) {
+                    // 自動発注処理
+                    // 出荷時に自動発注がかかるのはmethod=1と2 つまり「不定期系」の発注。
+                    if (method === 1) {
+                        // 不定期不定量発注
+
+                        // 発注する数は 1日当たりの平均出荷数 * 出荷対応日数 = 発注量(ただし、出荷対応日数が0なら、aveをそのまま発注かける)
+                        var hattyuuCount = ave * (Math.floor(balance / ave) === 0 ? 1 : Math.floor(balance / ave));
+                        // stock更新
+                        alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, zaiko.stock.id ]);
+                        // trans更新
+                        var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+                        alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, zaiko.stock.id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "-", "[不定期不定量]自動発注", 0]);
+                    } else if (method === 2) {
+                        // 不定期定量発注
+                        // stock更新
+                        var hattyuuCount = alasql('SELECT routine_order_number from stock where id = ?', [zaiko.stock.id])[0].routine_order_number;
+                        alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, zaiko.stock.id ]);
+                        // trans更新
+                        var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+                        alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, zaiko.stock.id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "-", "[不定期定量]自動発注", 0]);
+                    }
+                }
+
+                // ↑↑↑↑ここまで↑↑↑↑
             }
         });
     }, 1000);
 
-    // 出荷処理
+    // 入荷処理
     // 発注書にある入荷予定日が現在日付以下なら、出荷指示を行い、transとstockに実在庫更新かける
     setInterval(function() {
         var orders = alasql('SELECT * FROM porder WHERE status = 0');

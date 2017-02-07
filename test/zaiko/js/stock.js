@@ -38,88 +38,15 @@ $('#update').on('click', function() {
     balance = balance + qty;
     if (balance < 0) {
         alert("在庫が足りません");
+        // 在庫を元の数に戻す
+        balance = balance - qty;
         return false;
     }
     var memo = $('textarea[name="memo"]').val();
 
-    // 2/6 ここで強制的に発注していたが、仕様変更が入った。
-    // 入荷なら発注書(porder)にinsertして、common.jsの中で定期的に回してその中でリードタイム日数を上まっていたら発注を行う
-    if (qty > 0) {
-        var itemName = $("#detail").text();
-        var readTimeNissuu = alasql("select readdate from stock where id = ?;", [id])[0].readdate;
-        // 出荷予定日数にリードタイム日数を入れる
-        var orderid = alasql('SELECT MAX(id) + 1 as id FROM porder')[0].id;
-        if (!orderid) {
-            orderid = 1;
-        }
-        alasql('INSERT INTO porder(id, company, item, qty, nyukadate, memo, status) values(?,?,?,?,?,?,?)', [orderid, "-", itemName, qty, readTimeNissuu, memo, 0]);
-    } else {
-        alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance, id ]);
-        var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-        alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, date, qty, balance, "取引会社A", memo, 0]);
-    }
+    alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance, id ]);
+    var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
+    alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, date, qty, balance, "取引会社A", memo, 0]);
 
-    // 1日平均出荷数を算出
-    // 本当はSQLでbetweenで範囲抽出したかったが、alasqlがクソなので、出荷itemだけを抽出する
-    var shukko = alasql('SELECT * FROM trans WHERE stock = ? AND qty < 0', [ id ]);
-    // jsで日付絞り込みを行う
-    var now = new Date();
-    var yyyymmdd = now.getFullYear()+ "-" +
-        ( "0"+( now.getMonth()+1 ) ).slice(-2)+ "-" +
-        ( "0"+now.getDate() ).slice(-2);
-    var nowDate = new Date(yyyymmdd);
-    var targetTransQty = [];
-    $.each(shukko, function(index, data) {
-        if (data.trans.date) {
-            var targetDate = new Date(data.trans.date);
-            // 今日の日付 - 対象日付が一週間前以内なら対象とする
-            if ((nowDate.getTime() - targetDate.getTime()) /(1000*60*60*24) <= 7) {
-                targetTransQty.push(data.trans.qty*-1); // 個数を純粋に確保したいので、ここでマイナスを消す
-            }
-        }
-    });
-    // 1週間の平均出荷数を求めるため、sizeが7に満たない場合は、配列を0で埋めてから計算する
-    if (targetTransQty.length < 7) {
-        targetTransQty = zeroUme(targetTransQty);
-    }
-    // 平均値の算出
-    var sum = 0;
-    $.each(targetTransQty, function(index, qty) {
-        sum += qty;
-    });
-    var ave = Math.floor(sum / 7);
-    console.log(targetTransQty);
-    console.log(ave);
-    // 1日平均出荷数の更新
-    alasql('UPDATE stock SET ave = ? WHERE id = ?', [ ave, id ]);
-
-    // 自動発注処理
-    // 出荷対応日数(現在在庫 / 1日平均出荷数)がリードタイム日数を下回っていたら、自動で発注(=入荷)をかける
-    var readTimeNissuu = alasql("select readdate from stock where id = ?;", [id])[0].readdate;
-    // 発注方法
-    var method = alasql("select method from stock where id = ?;", [id])[0].method;
-    if (ave != 0 && Math.floor(balance / ave) < readTimeNissuu) {
-        // 自動発注処理
-        // 出荷時に自動発注がかかるのはmethod=1と2 つまり「不定期系」の発注。
-        if (method === 1) {
-            // 不定期不定量発注
-
-            // 発注する数は 1日当たりの平均出荷数 * 出荷対応日数 = 発注量(ただし、出荷対応日数が0なら、aveをそのまま発注かける)
-            var hattyuuCount = ave * (Math.floor(balance / ave) === 0 ? 1 : Math.floor(balance / ave));
-            // stock更新
-            alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, id ]);
-            // trans更新
-            var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "-", "[不定期不定量]自動発注", 0]);
-        } else if (method === 2) {
-            // 不定期定量発注
-            // stock更新
-            var hattyuuCount = alasql('SELECT routine_order_number from stock where id = ?', [id])[0].routine_order_number;
-            alasql('UPDATE stock SET balance = ? WHERE id = ?', [ balance + hattyuuCount, id ]);
-            // trans更新
-            var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
-            alasql('INSERT INTO trans VALUES (?,?,?,?,?,?,?,?)', [ trans_id, id, yyyymmdd, hattyuuCount, balance + hattyuuCount, "-", "[不定期定量]自動発注", 0]);
-        }
-    }
     window.location.assign('stock.html?id=' + id);
 });
