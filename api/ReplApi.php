@@ -83,6 +83,9 @@ class ReplApi extends Common {
         "チョベリバ",
         "MK5",
         "あなたのアモーレです",
+        "シンゴジラがみたい",
+        "PS4欲しい",
+        "君の名はって面白い？見るか悩むの",
     ];
     
     public function __construct($words)
