@@ -38,104 +38,57 @@ foreach ($results as $key => $value) {
 ?>
 <htML>
 <head>
-  <style>
-    .flex {
-      display: flex;
-    }
 
-    .flex.none > li {
-      list-style: none;
-    }
-
-    .items {
-      border: solid 1px;
-      margin: 3px;
-    }
-
-    .fadeout {
-      animation: fadeOut 4s ease 0s 1 normal;
-      -webkit-animation: fadeOut 2s ease 0s 1 normal;
-    }
-
-    @keyframes fadeOut {
-      0% {opacity: 1}
-      100% {opacity: 0}
-    }
-
-    @-webkit-keyframes fadeOut {
-      0% {opacity: 1}
-      100% {opacity: 0}
-    }
-  </style>
-</head
+</head>
 <body>
 <section>
   <div>
     <h2>楽天総合ランキング</h2>
-    <?php foreach ($items as $index => $item) { ?>
-      <ul class="flex none items">
-        <li><?php echo $item->rank ?>位</li>
-        <li><img src=<?php echo $images[$item->itemName]; ?>></li>
-        <li><?php echo $item->itemName ?></li>
-      </ul>
-    <?php } ?>
+      <table width="600" border="1">
+        <thead>
+          <tr>
+            <th>位</th>
+            <th>画像</th>
+            <th>商品名</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($items as $index => $item) { ?>
+          <tr>
+            <td>
+              <div>
+                <?php echo $item->rank ?>
+              </div>
+            </td>
+            <td>
+              <div>
+                <img src=<?php echo $images[$item->itemName]; ?>>
+              </div>
+            </td>
+            <td>
+              <div>
+                <?php echo $item->itemName ?>
+              </div>
+            </td>
+          </tr>
+        <?php } ?>
+        </tbody>
+      </table>
   </div>
 </section>
+<script
+    src="https://code.jquery.com/jquery-1.12.4.js"
+    integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
+    crossorigin="anonymous"></script>
 <script>
-  // DOM構築が完了したら、スクリプトをロードする
-  document.addEventListener('DOMContentLoaded', function () {
-    var rakutenEc = {
-      /**
-       * ランキング商品を10件までしか表示させないメソッド
-       */
-      showRanking: function () {
-        var items = document.getElementsByClassName("items");
-        for (var i = 0; i < items.length; i++) {
-          if (i >= 10) {
-            items[i].style.display = "none";
-          }
-        }
-      },
-      carouselItems: function () {
-        var _this = this;
-        setInterval(function () {
-          var items = document.getElementsByClassName("items");
-          var lastIndx = 0;
-          // 現在表示されている商品だけの配列を作成
-          var dispItems = [];
-          for (var i = 0; i < items.length; i++) {
-            // 見ている商品のみを抽出
-            if (items[i].style.display !== "none") {
-              dispItems.push(items[i]);
-              lastIndx = i;
-            }
-          }
-          // 今見えている先頭の商品を見えなくし
-          dispItems[0].classList.remove("fadeout");
-          dispItems[0].classList.add("fadeout");
-          var __this = _this;
-          setTimeout(function() {
-            dispItems[0].style.display = "none";
-            // 今見えている商品の次の商品を表示させる
-            var showNextIndex = lastIndx + 1;
-            // 最後まで来たら、最初に戻す
-            if (showNextIndex >= items.length) {
-              for (var i = 0; i < items.length; i++) {
-                items[i].style.display = "";
-              }
-              __this.showRanking();
-            } else {
-              dispItems[0].classList.remove("fadeout");
-              items[showNextIndex].style.display = "";
-            }
-          }, 2000);
-        }, 5000);
-      }
-    };
-    rakutenEc.showRanking();
-    setTimeout(function () {
-      rakutenEc.carouselItems();
-    }, 5000);
+  $(function() {
+    setInterval(function(){
+      $("tr:last").children('td').wrapInner('<div />').children().hide();
+      $("tr:last").children('td').children('div').animate({opacity: 0}, 0);
+      $("tr:last").prependTo("tbody");
+      $("tr").eq(1).children('td').children('div').animate( { height: 'toggle' }, 500, 'swing');
+      $("tr").eq(1).children('td').children('div').animate( { opacity: 1 }, 1000 );
+    }, 8000);
   });
 </script>
 </body>
