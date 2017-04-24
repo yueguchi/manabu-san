@@ -19,4 +19,6 @@ $options = array('http' => array(
     'content' => http_build_query($data),
 ));
 $contents = file_get_contents($url, false, stream_context_create($options));
-var_dump($contents);
+$jsonRet = json_decode($contents);
+$token = $jsonRet->access_token;
+var_dump($token);
