@@ -26,7 +26,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
     $q = $_POST["q"];
     $token = $_POST["hidden_token"];
     // https://api.instagram.com/v1/users/search?q=【ユーザー名】&access_token=【ACCESS-TOKEN】
-    $url = "https://api.instagram.com/v1/users/search?q={$q}&access_token={$token}]";
+    $url = "https://api.instagram.com/v1/users/search?q={$q}&access_token={$token}";
     $ret = file_get_contents($url);
     var_dump($ret);
 }
