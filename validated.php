@@ -47,7 +47,6 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         $ret = file_get_contents($url);
         $jsonRet = json_decode($ret);
         $tagList = $jsonRet->data;
-        var_dump($tagList);
     } else {
         // tag検索
         $tagName = $_POST["tag"];
@@ -63,6 +62,14 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
 <head>
     <meta charset="utf-8" />
     <title>インスタAPI連携</title>
+    <style>
+        ul.flex {
+            display: flex;
+        }
+        ul.flex > li {
+            list-style: none;
+        }
+    </style>
 </head>
 <body>
     <section>
@@ -88,7 +95,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
             <p><input type="text" value="<?php echo $tq; ?>" name="tq" placeholder="tagを記述"></p>
             <p><input type="submit" value="送信"></p>
         </form>
-        <ul>
+        <ul class="flex">
             <?php foreach ($tagList as $key => $tagObj) { ?>
                 <li><?php echo $tagObj->name; ?>(<?php echo $tagObj->media_count; ?>)</li>
             <?php } ?>
