@@ -24,7 +24,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
     $token = $jsonRet->access_token;
 } else if($_SERVER["REQUEST_METHOD"] == "POST") {
     $q = $_POST["q"];
-    if (mb_strlen($q) > 0) {
+    if (strlen($q) > 0) {
         // ユーザー検索
         $token = $_POST["hidden_token"];
         // https://api.instagram.com/v1/users/search?q=【ユーザー名】&access_token=【ACCESS-TOKEN】
