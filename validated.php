@@ -22,6 +22,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
     $contents = file_get_contents($url, false, stream_context_create($options));
     $jsonRet = json_decode($contents);
     $token = $jsonRet->access_token;
+    var_dump($jsonRet);
 } else if($_SERVER["REQUEST_METHOD"] == "POST") {
     $q = $_POST["q"];
     if (strlen($q) > 0) {
@@ -34,7 +35,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         $id = $jsonRet->data[0]->id;
         // idにひもづく記事一覧
         // https://api.instagram.com/v1/users/{user-id}/media/recent/?access_token=ACCESS-TOKEN
-        var_dump($id);
+        var_dump($jsonRet);
         $url = "https://api.instagram.com/v1/users/{$id}/media/recent/?access_token={$token}";
         $ret = file_get_contents($url);
         $jsonRet = json_decode($ret);
