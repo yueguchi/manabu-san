@@ -22,7 +22,6 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
     $contents = file_get_contents($url, false, stream_context_create($options));
     $jsonRet = json_decode($contents);
     $token = $jsonRet->access_token;
-    var_dump($jsonRet);
 } else if($_SERVER["REQUEST_METHOD"] == "POST") {
     $q = $_POST["q"];
     $tq = $_POST["tq"];
@@ -89,6 +88,11 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
             <p><input type="text" value="<?php echo $tq; ?>" name="tq" placeholder="tagを記述"></p>
             <p><input type="submit" value="送信"></p>
         </form>
+        <ul>
+            <?php foreach ($tagList as $key => $tagObj) { ?>
+                <li><?php echo $tagObj->name; ?>(<?php echo $tagObj->media_count; ?>)</li>
+            <?php } ?>
+        </ul>
     </section>
 </body>
 </html>
