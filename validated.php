@@ -31,9 +31,10 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         $url = "https://api.instagram.com/v1/users/search?q={$q}&access_token={$token}";
         $ret = file_get_contents($url);
         $jsonRet = json_decode($ret);
-        $id = $jsonRet->id;
+        $id = $jsonRet->data[0]->id;
         // idにひもづく記事一覧
-        var_dump($ret);
+        var_dump($id);
+        var_dump($jsonRet);
     } else {
         // tag検索
         $tagName = $_POST["tag"];
