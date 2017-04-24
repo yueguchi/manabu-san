@@ -33,7 +33,11 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         $jsonRet = json_decode($ret);
         $id = $jsonRet->data[0]->id;
         // idにひもづく記事一覧
+        // https://api.instagram.com/v1/users/{user-id}/media/recent/?access_token=ACCESS-TOKEN
         var_dump($id);
+        $url = "https://api.instagram.com/v1/users/{$id}/media/recent/?access_token={$token}";
+        $ret = file_get_contents($url);
+        $jsonRet = json_decode($ret);
         var_dump($jsonRet);
     } else {
         // tag検索
@@ -64,7 +68,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         <h1>tagで取得</h1>
         <form method="post">
             <input type="hidden" value="<?php echo $token; ?>" name="hidden_token">
-            <p><input type="text" value="<?php echo $tag; ?>" name="tag" placeholder="tagを記述"></p>
+            <p><input type="text" value="<?php echo $tagName; ?>" name="tag" placeholder="tagを記述"></p>
             <p><input type="submit" value="送信"></p>
         </form>
     </section>
