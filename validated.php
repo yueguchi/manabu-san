@@ -65,6 +65,9 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
     <style>
         ul.flex {
             display: flex;
+            justify-content: space-around;
+            margin: 5px;
+            flex-wrap: wrap;
         }
         ul.flex > li {
             list-style: none;
