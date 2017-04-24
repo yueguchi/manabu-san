@@ -24,11 +24,23 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
     $token = $jsonRet->access_token;
 } else if($_SERVER["REQUEST_METHOD"] == "POST") {
     $q = $_POST["q"];
-    $token = $_POST["hidden_token"];
-    // https://api.instagram.com/v1/users/search?q=【ユーザー名】&access_token=【ACCESS-TOKEN】
-    $url = "https://api.instagram.com/v1/users/search?q={$q}&access_token={$token}";
-    $ret = file_get_contents($url);
-    var_dump($ret);
+    if (mb_strlen($q) > 0) {
+        // ユーザー検索
+        $token = $_POST["hidden_token"];
+        // https://api.instagram.com/v1/users/search?q=【ユーザー名】&access_token=【ACCESS-TOKEN】
+        $url = "https://api.instagram.com/v1/users/search?q={$q}&access_token={$token}";
+        $ret = file_get_contents($url);
+        $jsonRet = json_decode($ret);
+        $id = $jsonRet->id;
+        // idにひもづく記事一覧
+        var_dump($id);
+    } else {
+        // tag検索
+        $tagName = $_POST["tag"];
+        $token = $_POST["hidden_token"];
+        // https://api.instagram.com/v1/tags/{tag-name}/media/recent?access_token=ACCESS-TOKEN
+        var_dump();
+    }
 }
 
 ?>
@@ -44,6 +56,14 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         <form method="post">
             <input type="hidden" value="<?php echo $token; ?>" name="hidden_token">
             <p><input type="text" value="<?php echo $q; ?>" name="q" placeholder="ユーザー名を記述"></p>
+            <p><input type="submit" value="送信"></p>
+        </form>
+    </section>
+    <section>
+        <h1>tagで取得</h1>
+        <form method="post">
+            <input type="hidden" value="<?php echo $token; ?>" name="hidden_token">
+            <p><input type="text" value="<?php echo $tag; ?>" name="tag" placeholder="tagを記述"></p>
             <p><input type="submit" value="送信"></p>
         </form>
     </section>
