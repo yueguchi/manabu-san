@@ -33,13 +33,13 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         $jsonRet = json_decode($ret);
         $id = $jsonRet->id;
         // idにひもづく記事一覧
-        var_dump($id);
+        var_dump($ret);
     } else {
         // tag検索
         $tagName = $_POST["tag"];
         $token = $_POST["hidden_token"];
         // https://api.instagram.com/v1/tags/{tag-name}/media/recent?access_token=ACCESS-TOKEN
-        var_dump();
+        var_dump($tagName);
     }
 }
 
