@@ -25,6 +25,7 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
     var_dump($jsonRet);
 } else if($_SERVER["REQUEST_METHOD"] == "POST") {
     $q = $_POST["q"];
+    $tq = $_POST["tq"];
     if (strlen($q) > 0) {
         // ユーザー検索
         $token = $_POST["hidden_token"];
@@ -40,6 +41,14 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         $ret = file_get_contents($url);
         $jsonRet = json_decode($ret);
         var_dump($jsonRet);
+    } else if (strlen($tq) > 0) {
+        // タグ一覧
+        $token = $_POST["hidden_token"];
+        $url = "https://api.instagram.com/v1/tags/search?q={$tq}&access_token={$token}";
+        $ret = file_get_contents($url);
+        $jsonRet = json_decode($ret);
+        $tagList = $jsonRet->data;
+        var_dump($tagList);
     } else {
         // tag検索
         $tagName = $_POST["tag"];
@@ -70,6 +79,14 @@ if($_SERVER["REQUEST_METHOD"] == "GET") {
         <form method="post">
             <input type="hidden" value="<?php echo $token; ?>" name="hidden_token">
             <p><input type="text" value="<?php echo $tagName; ?>" name="tag" placeholder="tagを記述"></p>
+            <p><input type="submit" value="送信"></p>
+        </form>
+    </section>
+    <section>
+        <h1>タグ検索</h1>
+        <form method="post">
+            <input type="hidden" value="<?php echo $token; ?>" name="hidden_token">
+            <p><input type="text" value="<?php echo $tq; ?>" name="tq" placeholder="tagを記述"></p>
             <p><input type="submit" value="送信"></p>
         </form>
     </section>
