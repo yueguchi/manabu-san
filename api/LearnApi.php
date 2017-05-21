@@ -134,8 +134,11 @@ class LearnApi extends Common {
      */
     protected function insertManabu($dbh, $words)
     {
+// herokuのmysqlが5mbを超えたので
+return;
         try {
             // PHPのエラーを表示するように設定
+
             $stmt = $dbh -> prepare("INSERT INTO manabu (hash, word1, word2, word3) VALUES (:hash, :word1, :word2, :word3)");
             // 重複データを挿入しないため、3単語をsha256でhash化して、DBに入れておく。
             $hash = hash("sha256", implode($words, ""));
